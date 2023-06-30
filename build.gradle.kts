@@ -38,13 +38,15 @@ dependencies {
   testImplementation("org.springframework.boot:spring-boot-starter-test")
 
   // -- DB
-  runtimeOnly("com.mysql:mysql-connector-j:8.0.33")
+  runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
+  runtimeOnly("com.mysql:mysql-connector-j:8.0.33") // for flyway
 
   // -- jOOQ
   implementation("org.springframework.boot:spring-boot-starter-jooq") {
     exclude(group = "org.jooq", module = "jooq")
   }
   implementation("org.jooq:jooq:3.18.5")
+
   jooqGenerator("com.mysql:mysql-connector-j:8.0.33")
   jooqGenerator("jakarta.xml.bind:jakarta.xml.bind-api:3.0.1")
 }
@@ -62,12 +64,12 @@ tasks.withType<Test> {
 
 // docker-compose にも直書きしてあるので、こっちも直書きにする
 // -- （本来は環境変数など非Git管理領域から取得する）
-val dbUrl = "jdbc:mysql://localhost:3306/bookdb"
+val dbUrlAsMySQL = "jdbc:mysql://localhost:3306/bookdb"
 val dbUserName = "maria"
 val dbPasswd = "mariaMaria"
 
 flyway {
-  url = dbUrl
+  url = dbUrlAsMySQL
   user = dbUserName
   password = dbPasswd
   cleanDisabled = false
@@ -80,7 +82,7 @@ jooq {
     create("main") {
       jooqConfiguration.apply {
         jdbc.apply {
-          url = dbUrl
+          url = dbUrlAsMySQL
           user = dbUserName
           password = dbPasswd
         }
