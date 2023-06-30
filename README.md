@@ -1,12 +1,14 @@
 
-# Kotlin, Spring Boot, jOOQ, H2 Sample
+# Kotlin, Spring Boot, jOOQ, MariaDB Sample
 
 KotlinとSpring Boot、jOOQを使った、書籍管理APIサーバーのサンプル。
 
 ## 制限事項
 
-- H2 最新に脆弱性報告あり [（2023/06現在. v2.1.214）](https://mvnrepository.com/artifact/com.h2database/h2/2.1.214)
-  - サンプルとして実装するため、一旦無視するものとする。
+- DB は MariaDB を Docker-Compose で立ち上げるものとする.
+- DB は Flyway でマイグレーションするものとする.
+  - マイグレーションファイルは `src/main/resources/db/migration` 以下に配置する.
+  - また、Flyway が 新しい MariaDB に正式対応していないみたいなので、あまり突飛なコードを書くと動かないかも。
 
 ## 実装仕様
 
@@ -16,18 +18,32 @@ KotlinとSpring Boot、jOOQを使った、書籍管理APIサーバーのサン�
 
 ## How To Build & Run
 
+- Java 17 or Later required.
+- Docker/Docker-Compose required.
+
 ### Debug Run
 
 ```shell
+$ mkdir db_data
+$ docker-compose up -d
+  >> これで mariadb が立ち上がる.
 $ ./gradlew flywayMigrate
 $ ./gradlew bootRun
-``` 
+```
 
 ### Build
 
-Flyway は実行時に動かない仕組みにしたので、デプロイ先で調整する必要あり。
+TBD..(というか本番デプロイの想定はしない.)
 
-```shell
-$ ./gradlew build
-```
+## development
 
+### on IntelliJ IDEA
+
+- プロジェクト設定とGradle設定のJavaを17以上に設定しないと初回からエラー出る。
+
+## DB仕様について
+
+* 参考資料
+  * [OpenBD 書誌APIデータ仕様 (v1)](https://openbd.jp/spec/)
+* サンプルデータ
+  * ChatGPTに作らせてみた
