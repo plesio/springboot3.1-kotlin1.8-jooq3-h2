@@ -5,6 +5,7 @@ plugins {
   id("io.spring.dependency-management") version "1.1.0"
   id("nu.studer.jooq") version "8.2.1"
   id("org.flywaydb.flyway") version "9.20.0"
+
   kotlin("jvm") version "1.8.22"
   kotlin("plugin.spring") version "1.8.22"
 }
@@ -20,18 +21,31 @@ repositories {
   mavenCentral()
 }
 
+buildscript {
+  dependencies {
+    classpath("org.flywaydb:flyway-mysql:9.8.1")
+  }
+}
+
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter-web")
-  implementation("org.springframework.boot:spring-boot-starter-jooq")
-  implementation("org.jooq:jooq:3.18.5")
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
   implementation("org.jetbrains.kotlin:kotlin-reflect")
 
+
+  // -- TEST
   developmentOnly("org.springframework.boot:spring-boot-devtools")
-  runtimeOnly("com.h2database:h2")
   testImplementation("org.springframework.boot:spring-boot-starter-test")
 
-  jooqGenerator("com.h2database:h2")
+  // -- DB
+  runtimeOnly("com.mysql:mysql-connector-j:8.0.33")
+
+  // -- jOOQ
+  implementation("org.springframework.boot:spring-boot-starter-jooq") {
+    exclude(group = "org.jooq", module = "jooq")
+  }
+  implementation("org.jooq:jooq:3.18.5")
+  jooqGenerator("com.mysql:mysql-connector-j:8.0.33")
   jooqGenerator("jakarta.xml.bind:jakarta.xml.bind-api:3.0.1")
 }
 
@@ -46,14 +60,19 @@ tasks.withType<Test> {
   useJUnitPlatform()
 }
 
-val h2FileDir = "${rootDir.absoluteFile}/h2bookdb"
-val h2Url = "jdbc:h2:file:${h2FileDir}"
+// docker-compose にも直書きしてあるので、こっちも直書きにする
+// -- （本来は環境変数など非Git管理領域から取得する）
+val dbUrl = "jdbc:mysql://localhost:3306/bookdb"
+val dbUserName = "maria"
+val dbPasswd = "mariaMaria"
 
 flyway {
-  driver = "org.h2.Driver"
-  url = h2Url
-  user = "sa"
-  password = "password"
+  url = dbUrl
+  user = dbUserName
+  password = dbPasswd
+  cleanDisabled = false
+  baselineVersion = "0.0.0"
+  baselineOnMigrate = true
 }
 
 jooq {
@@ -61,15 +80,15 @@ jooq {
     create("main") {
       jooqConfiguration.apply {
         jdbc.apply {
-          url = h2Url
-          user = "sa"
-          password = "password"
+          url = dbUrl
+          user = dbUserName
+          password = dbPasswd
         }
         generator.apply {
           name = "org.jooq.codegen.KotlinGenerator"
           database.apply {
-            name = "org.jooq.meta.h2.H2Database"
-            inputSchema = "PUBLIC"
+            name = "org.jooq.meta.mysql.MySQLDatabase"
+            inputSchema = "bookdb"
           }
           generate.apply {
             isDeprecated = false

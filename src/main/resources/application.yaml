@@ -1,20 +1,17 @@
 spring:
   datasource:
-    url: jdbc:h2:file:./h2bookdb;DB_CLOSE_ON_EXIT=FALSE;DB_CLOSE_DELAY=-1
-    username: sa
-    password: password
-    driverClassName: org.h2.Driver
+    url: jdbc:mysql://localhost:13306/bookdb
+    username: maria
+    password: mariaMaria
+    driverClassName: com.mysql.cj.jdbc.Driver
 
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
+    database-platform: org.hibernate.dialect.MariaDBDialect
 
   sql:
     init:
       encoding: UTF-8
 
-  h2:
-    console:
+  devtools:
+    restart:
       enabled: true
-      path: /h2-console
-      settings.trace: false
-      settings.web-allow-others: false

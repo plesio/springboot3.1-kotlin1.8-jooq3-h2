@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  maria_db:
+    image: mariadb:10.11.4-jammy
+    container_name: c_maria_db
+    hostname: h_maria_db
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      - MARIADB_ROOT_HOST=%
+      - MARIADB_DATABASE=bookdb
+      - MARIADB_USER=maria
+      - MARIADB_PASSWORD=mariaMaria
+      - MARIADB_MYSQL_LOCALHOST_USER=maria
+      - MARIADB_MYSQL_LOCALHOST_PASSWORD=mariaMaria
+      - MARIADB_ROOT_PASSWORD=mariaMaria
+    volumes:
+      - ./db_data:/var/lib/mysql
+    user: 1000:1000
