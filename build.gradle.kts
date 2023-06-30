@@ -80,6 +80,10 @@ flyway {
 jooq {
   configurations {
     create("main") {
+      // -- デフォルトで起動時ビルドをしないようにするおまじない。
+      val isGenerate = System.getenv("JOOQ_GENERATE")?.toBoolean() ?: false
+      generateSchemaSourceOnCompilation.set(isGenerate)
+      // --
       jooqConfiguration.apply {
         jdbc.apply {
           url = dbUrlAsMySQL
@@ -91,15 +95,20 @@ jooq {
           database.apply {
             name = "org.jooq.meta.mysql.MySQLDatabase"
             inputSchema = "bookdb"
+            excludes = "flyway_schema_history"
           }
           generate.apply {
             isDeprecated = false
             isTables = true
+            isRecords = true
+            isPojos = true
+            isDaos = true
           }
           target.apply {
-            packageName = "saurus.plesio.bookserver"
+            packageName = "saurus.plesio.bookserver.jooq"
             directory = "${buildDir}/generated/source/jooq/main"
           }
+          strategy.name = "org.jooq.codegen.DefaultGeneratorStrategy"
         }
       }
     }
