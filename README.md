@@ -14,7 +14,7 @@ KotlinとSpring Boot、jOOQを使った、書籍管理APIサーバーのサン�
 - 著者に紐づく本を取得できる。
 - APIのみ。※Viewはなし。
 
-## How To Build & Run(War)
+## How To Build & Run
 
 ### Debug Run
 
