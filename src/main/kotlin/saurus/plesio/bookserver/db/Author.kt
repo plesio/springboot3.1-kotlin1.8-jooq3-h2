@@ -11,10 +11,10 @@ import saurus.plesio.bookserver.jooq.tables.pojos.Author
 class AuthorRepository(
   private val dslContext: DSLContext
 ) {
-  fun findByLastName(last_name: String): Author? {
+  fun findByLastName(lastName: String): Author? {
     return this.dslContext.select()
       .from(AUTHOR)
-      .where(AUTHOR.LAST_NAME.eq(last_name))
+      .where(AUTHOR.LAST_NAME.eq(lastName))
       .fetchOne()?.let { toModel(it) }
   }
 

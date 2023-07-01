@@ -1,0 +1,58 @@
+openapi: "3.0.2"
+
+info:
+  title: OpenAPI Generator Kotlin
+  description: OpenAPI Generator Kotlin
+  version: "1.0"
+
+servers:
+  - url: /api/v1
+
+paths:
+
+  /author/all:
+    get:
+      tags:
+        - AuthorAll
+      summary: 全ての著者を取得する
+      description: DB に登録されている著者を全て取得する
+      operationId: List
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorsResponse'
+
+components:
+  schemas:
+    Author:
+      required:
+        - author_id
+        - first_name
+        - last_name
+        - birth_year
+      type: object
+      properties:
+        author_id:
+          type: string
+        first_name:
+          type: string
+          maxLength: 50
+        last_name:
+          type: string
+          maxLength: 50
+        birth_year:
+          type: integer
+        remarks:
+          type: string
+    AuthorsResponse:
+      required:
+        - authors
+      type: object
+      properties:
+        authors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Author'
