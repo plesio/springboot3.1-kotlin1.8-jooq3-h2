@@ -9,14 +9,13 @@ servers:
   - url: /api/v1
 
 paths:
-
-  /author/all:
+  /authors/all:
     get:
       tags:
-        - AuthorAll
+        - GetAuthorsAll
       summary: 全ての著者を取得する
       description: DB に登録されている著者を全て取得する
-      operationId: List
+      operationId: GetAuthorsAll
       responses:
         '200':
           description: OK
@@ -24,16 +23,82 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthorsResponse'
+  /authors/name:
+    get:
+      tags:
+        - GetAuthorByName
+      summary: 著者を1名取得する
+      description: DB に登録されている著者を取得する
+      parameters:
+        - in: query
+          name: firstName
+          schema:
+            type: string
+          description: The author first name
+        - in: query
+          name: lastName
+          schema:
+            type: string
+          description: The author last name
+      operationId: GetAuthorByName
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Author'
+  /author:
+    get:
+      tags:
+        - GetAuthorSingle
+      summary: 著者を1名取得する
+      description: DB に登録されている著者を取得する
+      parameters:
+        - in: query
+          name: authorId
+          schema:
+            type: string
+          required: true
+          description: The author ID
+      operationId: GetAuthorSingle
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Author'
+        '404':
+          description: Not Found
+  /author/upsert:
+    post:
+      tags:
+        - PostUpsertAuthorSingle
+      summary: 著者を登録・更新する
+      description: DB に著者を登録・更新する
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Author'
+      operationId: PostUpsertAuthorSingle
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorUpsertResponse'
+        '400':
+          description: Bad Request
 
 components:
   schemas:
+    # -- 以下はリクエスト用
     Author:
-      required:
-        - author_id
-        - first_name
-        - last_name
-        - birth_year
-      type: object
+      # required:  -- 縛らない.
       properties:
         author_id:
           type: string
@@ -47,6 +112,7 @@ components:
           type: integer
         remarks:
           type: string
+    # -- 以下はレスポンス用
     AuthorsResponse:
       required:
         - authors
@@ -56,3 +122,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Author'
+    AuthorUpsertResponse:
+      required:
+        - author_id
+      type: object
+      properties:
+        author_id:
+          type: string

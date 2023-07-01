@@ -21,6 +21,7 @@ java {
 
 repositories {
   mavenCentral()
+  maven { url = uri("https://jitpack.io") }
 }
 
 buildscript {
@@ -34,6 +35,7 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-validation")
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
   implementation("org.jetbrains.kotlin:kotlin-reflect")
+  implementation("com.github.guepardoapps:kulid:2.0.0.0")
 
 
   // -- TEST
@@ -136,6 +138,7 @@ task<GenerateTask>("generateApiServer") {
     mapOf(
       "interfaceOnly" to "true",
       "useSpringBoot3" to "true",
+      "serializableModel" to "true",
       "generatedConstructorWithRequiredArgs" to "false"
     )
   )
