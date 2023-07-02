@@ -142,9 +142,8 @@ task<GenerateTask>("generateApiServer") {
       "generatedConstructorWithRequiredArgs" to "false"
     )
   )
-  // true にすると tags 準拠で、API の interface を生成する
   additionalProperties.set(
-    mapOf("useTags" to "true")
+    mapOf("useTags" to "true") //tags 準拠で、API の interface を生成する
   )
 }
 

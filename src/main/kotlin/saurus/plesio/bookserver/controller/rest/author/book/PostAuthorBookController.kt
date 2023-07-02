@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.server.ResponseStatusException
 import saurus.plesio.bookserver.db.AuthorBookRepository
 import saurus.plesio.bookserver.db.AuthorRepository
 import saurus.plesio.bookserver.db.BookRepository
@@ -26,9 +27,9 @@ class PostAuthorBookController : PostInsertAuthorBookApi {
 
   override fun postInsertAuthorBook(authorId: String, book: Book): ResponseEntity<BookIdResponse> {
     if (authorId.isBlank()) {
-      return ResponseEntity(HttpStatus.NOT_FOUND)
+      throw ResponseStatusException(HttpStatus.NOT_FOUND, "authorId is not match.")
     } else if (book.bookTitle.isNullOrBlank()) {
-      return ResponseEntity(HttpStatus.BAD_REQUEST)
+      throw ResponseStatusException(HttpStatus.BAD_REQUEST, "bookTitle is blank..")
     }
     // Author の存在確認をする.
     authorRepository.findById(authorId) ?: return ResponseEntity(HttpStatus.NOT_FOUND)
@@ -36,7 +37,7 @@ class PostAuthorBookController : PostInsertAuthorBookApi {
       val newBookId = bookRepository.insert(authorId, book.bookTitle, book.isbnCode, book.publishedDate, book.remarks)
       ResponseEntity(BookIdResponse(bookId = newBookId), HttpStatus.OK)
     } catch (e: Exception) {
-      ResponseEntity(HttpStatus.BAD_REQUEST)
+      throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
     }
   }
 

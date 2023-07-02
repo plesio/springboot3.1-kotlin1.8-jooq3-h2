@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.server.ResponseStatusException
 import saurus.plesio.bookserver.db.AuthorRepository
 import saurus.plesio.bookserver.openapi.generated.controller.GetAuthorApi
 import saurus.plesio.bookserver.openapi.generated.controller.PatchUpdateAuthorApi
@@ -19,11 +20,14 @@ class PostAuthorController : PostInsertAuthorApi {
   lateinit var authorRepository: AuthorRepository
 
   override fun postInsertAuthor(author: Author): ResponseEntity<AuthorIdResponse> {
+    if(author.authorName.isBlank()) {
+      throw ResponseStatusException(HttpStatus.BAD_REQUEST, "authorName is blank")
+    }
     return try {
       val newAuthorId = authorRepository.insert(author.authorName, author.birthYear, author.remarks ?: "")
       ResponseEntity(AuthorIdResponse(authorId = newAuthorId), HttpStatus.OK)
     } catch (e: Exception) {
-      ResponseEntity(HttpStatus.BAD_REQUEST)
+      throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
     }
   }
 

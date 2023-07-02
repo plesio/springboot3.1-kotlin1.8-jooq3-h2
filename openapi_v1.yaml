@@ -17,15 +17,10 @@ paths:
       description: DB に登録されている著者を全て取得する
       parameters:
         - in: query
-          name: firstName
+          name: authorName
           schema:
             type: string
-          description: The author first name
-        - in: query
-          name: lastName
-          schema:
-            type: string
-          description: The author last name
+          description: The author name
       operationId: GetAuthors
       responses:
         '200':

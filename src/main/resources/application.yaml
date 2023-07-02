@@ -15,3 +15,9 @@ spring:
   devtools:
     restart:
       enabled: true
+server:
+  error:
+    include-stacktrace: never
+    include-exception: false
+    include-binding-errors: never
+    include-message: always

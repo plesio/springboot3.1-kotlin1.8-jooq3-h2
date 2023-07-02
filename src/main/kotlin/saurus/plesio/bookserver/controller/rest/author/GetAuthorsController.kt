@@ -15,8 +15,8 @@ class GetAuthorsController : GetAuthorsApi {
   @Autowired
   lateinit var authorRepository: AuthorRepository
 
-  override fun getAuthors(firstName: String?, lastName: String?): ResponseEntity<AuthorsResponse> {
-    return ResponseEntity(AuthorsResponse(authors = authorRepository.listAll().map {
+  override fun getAuthors(authorName: String?): ResponseEntity<AuthorsResponse> {
+    return ResponseEntity(AuthorsResponse(authors = authorRepository.listBytName(authorName).map {
       Author(
         authorId = it.authorId,
         authorName = it.authorName!!,
