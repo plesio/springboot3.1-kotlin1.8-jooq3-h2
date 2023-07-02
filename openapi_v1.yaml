@@ -9,26 +9,12 @@ servers:
   - url: /api/v1
 
 paths:
-  /authors/all:
+  /authors:
     get:
       tags:
-        - GetAuthorsAll
+        - GetAuthors
       summary: 全ての著者を取得する
       description: DB に登録されている著者を全て取得する
-      operationId: GetAuthorsAll
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthorsResponse'
-  /authors/name:
-    get:
-      tags:
-        - GetAuthorByName
-      summary: 著者を1名取得する
-      description: DB に登録されている著者を取得する
       parameters:
         - in: query
           name: firstName
@@ -40,28 +26,50 @@ paths:
           schema:
             type: string
           description: The author last name
-      operationId: GetAuthorByName
+      operationId: GetAuthors
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Author'
-  /author:
+                $ref: '#/components/schemas/AuthorsResponse'
+    post:
+      tags:
+        - PostInsertAuthor
+      summary: 著者を1名登録する
+      description: DB に著者を登録する
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Author'
+      operationId: PostInsertAuthor
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorIdResponse'
+        '400':
+          description: Bad Request
+
+  /authors/{authorId}:
     get:
       tags:
-        - GetAuthorSingle
+        - GetAuthor
       summary: 著者を1名取得する
       description: DB に登録されている著者を取得する
       parameters:
-        - in: query
+        - in: path
           name: authorId
           schema:
             type: string
           required: true
           description: The author ID
-      operationId: GetAuthorSingle
+      operationId: GetAuthor
       responses:
         '200':
           description: OK
@@ -71,47 +79,200 @@ paths:
                 $ref: '#/components/schemas/Author'
         '404':
           description: Not Found
-  /author/upsert:
-    post:
+    patch:
       tags:
-        - PostUpsertAuthorSingle
-      summary: 著者を登録・更新する
-      description: DB に著者を登録・更新する
+        - PatchUpdateAuthor
+      summary: 著者を1名更新する
+      description: DB に登録されている著者の情報を取得する
+      parameters:
+        - in: path
+          name: authorId
+          schema:
+            type: string
+          required: true
+          description: The author ID
       requestBody:
-        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/Author'
-      operationId: PostUpsertAuthorSingle
+      operationId: PatchUpdateAuthor
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthorUpsertResponse'
+                $ref: '#/components/schemas/AuthorIdResponse'
         '400':
           description: Bad Request
+        '404':
+          description: Not Found
+  /authors/{authorId}/books:
+    get:
+      tags:
+        - GetAuthorBooks
+      summary: 著者の著書を取得する
+      description: DB に登録されている著者の著書を取得する
+      parameters:
+        - in: path
+          name: authorId
+          schema:
+            type: string
+          required: true
+          description: The author ID
+      operationId: GetAuthorBooks
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooksResponse'
+        '404':
+          description: Not Found
+    post:
+      tags:
+        - PostInsertAuthorBook
+      summary: 著者の書籍を1名登録する
+      description: DB に著者の書籍を登録する
+      parameters:
+        - in: path
+          name: authorId
+          schema:
+            type: string
+          required: true
+          description: The author ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Book'
+      operationId: PostInsertAuthorBook
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookIdResponse'
+        '400':
+          description: Bad Request
+  /books:
+    get:
+      tags:
+        - GetBooks
+      summary: 全ての書籍を取得する
+      description: DB に登録されている書籍を全て取得する
+      parameters:
+        - in: query
+          name: title
+          schema:
+            type: string
+          description: The book title
+        - in: query
+          name: isbnCode
+          schema:
+            type: string
+          description: The book isbn code
+      operationId: GetBooks
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooksResponse'
+  /books/{bookId}:
+    get:
+      tags:
+        - GetBook
+      summary: 書籍を1冊取得する
+      description: DB に登録されている書籍を取得する
+      parameters:
+        - in: path
+          name: bookId
+          schema:
+            type: string
+          required: true
+          description: The book ID
+      operationId: GetBook
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '404':
+          description: Not Found
+    patch:
+        tags:
+            - PatchUpdateBook
+        summary: 書籍を1冊更新する
+        description: DB に登録されている書籍の情報を取得する
+        parameters:
+          - in: path
+            name: bookId
+            schema:
+              type: string
+            required: true
+            description: The book ID
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        operationId: PatchUpdateBook
+        responses:
+          '200':
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/BookIdResponse'
+          '400':
+            description: Bad Request
+          '404':
+            description: Not Found
+
 
 components:
   schemas:
     # -- 以下はリクエスト用
     Author:
-      # required:  -- 縛らない.
+      required:
+        - authorName
       properties:
-        author_id:
+        authorId:
           type: string
-        first_name:
-          type: string
-          maxLength: 50
-        last_name:
+          description: DB上は Required だが、新規作成などでも使いたいので空であることをここでは許容する.
+        authorName:
           type: string
           maxLength: 50
-        birth_year:
+        birthYear:
           type: integer
         remarks:
           type: string
+    Book:
+      required:
+        - title
+      properties:
+        bookId:
+          type: string
+          description: DB上は Required だが、新規作成などでも使いたいので空であることをここでは許容する.
+        bookTitle:
+          type: string
+        isbnCode:
+          type: string
+        publishedDate:
+          type: string
+          format: date
+        remarks:
+          type: string
+
     # -- 以下はレスポンス用
     AuthorsResponse:
       required:
@@ -122,10 +283,26 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Author'
-    AuthorUpsertResponse:
+    AuthorIdResponse:
       required:
-        - author_id
+        - authorId
       type: object
       properties:
-        author_id:
+        authorId:
+          type: string
+    BooksResponse:
+      required:
+        - books
+      type: object
+      properties:
+        books:
+          type: array
+          items:
+            $ref: '#/components/schemas/Book'
+    BookIdResponse:
+      required:
+        - bookId
+      type: object
+      properties:
+        bookId:
           type: string

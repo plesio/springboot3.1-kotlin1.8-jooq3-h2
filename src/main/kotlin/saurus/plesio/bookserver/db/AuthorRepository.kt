@@ -1,6 +1,5 @@
 package saurus.plesio.bookserver.db
 
-import com.fasterxml.jackson.annotation.ObjectIdGenerators.UUIDGenerator
 import com.github.guepardoapps.kulid.ULID
 import org.jooq.DSLContext
 import org.jooq.Record
@@ -21,21 +20,15 @@ class AuthorRepository(
       .fetchOne()?.let { toModel(it) }
   }
 
-  fun findBytName(firstName: String? = null, lastName: String? = null): List<Author> {
+  fun findBytName(authorName: String? = null): List<Author> {
     return this.dslContext.select()
       .from(AUTHOR)
       .where(
-        if (firstName != null) {
-          AUTHOR.FIRST_NAME.eq(firstName)
+        if (authorName != null) {
+          AUTHOR.AUTHOR_NAME.eq(authorName)
         } else {
           DSL.trueCondition()
-        }.and(
-          if (lastName != null) {
-            AUTHOR.LAST_NAME.eq(lastName)
-          } else {
-            DSL.trueCondition()
-          }
-        )
+        }
       )
       .fetch().map { toModel(it) }
   }
@@ -46,29 +39,25 @@ class AuthorRepository(
       .fetch().map { toModel(it) }
   }
 
-  fun insert(firstName: String, lastName: String, birthYear: Int?, remarks: String): Author {
+  fun insert(authorName: String, birthYear: Int?, remarks: String): Author {
     val record = this.dslContext.newRecord(AUTHOR).also {
       it.authorId = ULID.random()
-      it.firstName = firstName
-      it.lastName = lastName
+      it.authorName = authorName
       it.birthYear = birthYear
       it.remarks = remarks
       it.store()
     }
-    return Author(record.authorId!!, record.firstName!!, record.lastName!!, record.birthYear!!, record.remarks!!)
+    return Author(record.authorId!!, record.authorName!!, record.birthYear, record.remarks)
   }
 
-  fun update(authorId:String,firstName: String, lastName: String, birthYear: Int?, remarks: String) {
+  fun update(author: Author) {
     this.dslContext.update(AUTHOR)
-      .set(AUTHOR.FIRST_NAME, firstName)
-      .set(AUTHOR.LAST_NAME, lastName)
-      .set(AUTHOR.BIRTH_YEAR, birthYear)
-      .set(AUTHOR.REMARKS, remarks)
-      .where(AUTHOR.AUTHOR_ID.eq(authorId))
+      .set(AUTHOR.AUTHOR_NAME, author.authorName)
+      .set(AUTHOR.BIRTH_YEAR, author.birthYear)
+      .set(AUTHOR.REMARKS, author.remarks)
+      .where(AUTHOR.AUTHOR_ID.eq(author.authorId))
       .execute()
-    return
   }
-
 
 
   fun deleteAll() {
@@ -77,10 +66,9 @@ class AuthorRepository(
 
 
   private fun toModel(record: Record) = Author(
-    record.getValue(AUTHOR.AUTHOR_ID)!!,
-    record.getValue(AUTHOR.FIRST_NAME)!!,
-    record.getValue(AUTHOR.LAST_NAME)!!,
-    record.getValue(AUTHOR.BIRTH_YEAR)!!,
-    record.getValue(AUTHOR.REMARKS)!!,
+    record.getValue(AUTHOR.AUTHOR_ID),
+    record.getValue(AUTHOR.AUTHOR_NAME),
+    record.getValue(AUTHOR.BIRTH_YEAR),
+    record.getValue(AUTHOR.REMARKS),
   )
 }
