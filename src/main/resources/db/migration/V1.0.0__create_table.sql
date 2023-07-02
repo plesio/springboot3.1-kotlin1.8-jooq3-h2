@@ -19,7 +19,6 @@ CREATE TABLE author_book
 (
     author_id      VARCHAR(36) NOT NULL,
     book_id        VARCHAR(36) NOT NULL,
-    remarks        text         ,
 
     PRIMARY KEY (author_id, book_id),
     CONSTRAINT fk_ab_author FOREIGN KEY (author_id) REFERENCES author (author_id)

@@ -92,6 +92,7 @@ paths:
           required: true
           description: The author ID
       requestBody:
+        required: true
         content:
           application/json:
             schema:

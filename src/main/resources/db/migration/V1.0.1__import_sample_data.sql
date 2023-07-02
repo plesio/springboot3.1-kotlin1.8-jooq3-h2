@@ -32,18 +32,18 @@ VALUES ('ea480422-b37d-4a64-9a01-d6db8179d73f', '異世界転生', '978-4-123456
        ('e76bb5e2-9da0-4e7e-9e95-d26efba58660', '冒険者ギルドの絆', '978-4-123456-20', DATE '2021-11-15', '');
 
 -- author_bookテーブルのINSERT文
-INSERT INTO author_book (author_id, book_id, remarks)
-VALUES ('f47ac10b-58cc-4372-a567-0e02b2c3d479', 'ea480422-b37d-4a64-9a01-d6db8179d73f', ''),
-       ('1baa64f3-7c1a-4de5-b1ac-63e8a8d50a32', '6f39c14c-31a4-4e68-9eeb-f17f7ef15b4c', ''),
-       ('c7dc2c85-b4fc-4ef3-9b67-153c27768471', '8d94b53a-8f18-4421-9f1c-98a1c56cc9d9', ''),
-       ('bf901d12-5be4-4e4d-b1d3-2c9f50d7b3a7', '30f1b31e-23e0-4ce9-a0fb-9b64b0be2b3f', ''),
-       ('e2709e1a-2ae9-4e2b-8d0e-9276e6b10fe3', '46a2923f-0ee7-422b-84a5-27c431cfda1b', ''),
-       ('ca5a6b4e-4ce6-47e6-b2b6-eb3b7194a7c1', '2a8f7a4b-81ad-4b34-913d-40871eac9c75', ''),
-       ('ae5a9063-2116-4bde-9cb0-90d3449d42d9', '5f893cac-bcb6-4f8e-9366-9ff7ab63dcab', ''),
-       ('f47ac10b-58cc-4372-a567-0e02b2c3d479', 'f24a42ae-53fc-445d-b4e9-92f137849d7a', ''),
-       ('1baa64f3-7c1a-4de5-b1ac-63e8a8d50a32', '0a2c7f03-78d6-456e-9e7f-b3e6e787997f', ''),
-       ('c7dc2c85-b4fc-4ef3-9b67-153c27768471', '3a19663a-7bcf-48c4-a062-b8c03f01060d', ''),
-       ('bf901d12-5be4-4e4d-b1d3-2c9f50d7b3a7', '3f72a21e-ee29-4e29-9434-9f17a5b9f7e6', ''),
-       ('e2709e1a-2ae9-4e2b-8d0e-9276e6b10fe3', 'ded71aeb-7c08-4a37-b46a-50a0dce6d8a9', ''),
-       ('ca5a6b4e-4ce6-47e6-b2b6-eb3b7194a7c1', '537eeb0b-3036-4a3e-8c94-b7e3a76fb9b5', ''),
-       ('ae5a9063-2116-4bde-9cb0-90d3449d42d9', 'e76bb5e2-9da0-4e7e-9e95-d26efba58660', '');
+INSERT INTO author_book (author_id, book_id)
+VALUES ('f47ac10b-58cc-4372-a567-0e02b2c3d479', 'ea480422-b37d-4a64-9a01-d6db8179d73f'),
+       ('1baa64f3-7c1a-4de5-b1ac-63e8a8d50a32', '6f39c14c-31a4-4e68-9eeb-f17f7ef15b4c'),
+       ('c7dc2c85-b4fc-4ef3-9b67-153c27768471', '8d94b53a-8f18-4421-9f1c-98a1c56cc9d9'),
+       ('bf901d12-5be4-4e4d-b1d3-2c9f50d7b3a7', '30f1b31e-23e0-4ce9-a0fb-9b64b0be2b3f'),
+       ('e2709e1a-2ae9-4e2b-8d0e-9276e6b10fe3', '46a2923f-0ee7-422b-84a5-27c431cfda1b'),
+       ('ca5a6b4e-4ce6-47e6-b2b6-eb3b7194a7c1', '2a8f7a4b-81ad-4b34-913d-40871eac9c75'),
+       ('ae5a9063-2116-4bde-9cb0-90d3449d42d9', '5f893cac-bcb6-4f8e-9366-9ff7ab63dcab'),
+       ('f47ac10b-58cc-4372-a567-0e02b2c3d479', 'f24a42ae-53fc-445d-b4e9-92f137849d7a'),
+       ('1baa64f3-7c1a-4de5-b1ac-63e8a8d50a32', '0a2c7f03-78d6-456e-9e7f-b3e6e787997f'),
+       ('c7dc2c85-b4fc-4ef3-9b67-153c27768471', '3a19663a-7bcf-48c4-a062-b8c03f01060d'),
+       ('bf901d12-5be4-4e4d-b1d3-2c9f50d7b3a7', '3f72a21e-ee29-4e29-9434-9f17a5b9f7e6'),
+       ('e2709e1a-2ae9-4e2b-8d0e-9276e6b10fe3', 'ded71aeb-7c08-4a37-b46a-50a0dce6d8a9'),
+       ('ca5a6b4e-4ce6-47e6-b2b6-eb3b7194a7c1', '537eeb0b-3036-4a3e-8c94-b7e3a76fb9b5'),
+       ('ae5a9063-2116-4bde-9cb0-90d3449d42d9', 'e76bb5e2-9da0-4e7e-9e95-d26efba58660');

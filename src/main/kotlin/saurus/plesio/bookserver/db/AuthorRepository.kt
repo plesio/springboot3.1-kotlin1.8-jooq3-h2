@@ -20,7 +20,7 @@ class AuthorRepository(
       .fetchOne()?.let { toModel(it) }
   }
 
-  fun findBytName(authorName: String? = null): List<Author> {
+  fun listBytName(authorName: String? = null): List<Author> {
     return this.dslContext.select()
       .from(AUTHOR)
       .where(
@@ -33,13 +33,13 @@ class AuthorRepository(
       .fetch().map { toModel(it) }
   }
 
-  fun findAll(): List<Author> {
+  fun listAll(): List<Author> {
     return this.dslContext.select()
       .from(AUTHOR)
       .fetch().map { toModel(it) }
   }
 
-  fun insert(authorName: String, birthYear: Int?, remarks: String): Author {
+  fun insert(authorName: String, birthYear: Int?, remarks: String): String {
     val record = this.dslContext.newRecord(AUTHOR).also {
       it.authorId = ULID.random()
       it.authorName = authorName
@@ -47,11 +47,11 @@ class AuthorRepository(
       it.remarks = remarks
       it.store()
     }
-    return Author(record.authorId!!, record.authorName!!, record.birthYear, record.remarks)
+    return record.authorId!!
   }
 
-  fun update(author: Author) {
-    this.dslContext.update(AUTHOR)
+  fun update(author: Author): Int {
+    return this.dslContext.update(AUTHOR)
       .set(AUTHOR.AUTHOR_NAME, author.authorName)
       .set(AUTHOR.BIRTH_YEAR, author.birthYear)
       .set(AUTHOR.REMARKS, author.remarks)
@@ -59,9 +59,8 @@ class AuthorRepository(
       .execute()
   }
 
-
-  fun deleteAll() {
-    this.dslContext.deleteFrom(AUTHOR).execute()
+  fun deleteAll(): Int {
+    return this.dslContext.deleteFrom(AUTHOR).execute()
   }
 
 

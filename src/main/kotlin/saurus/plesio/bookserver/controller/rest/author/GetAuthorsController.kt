@@ -16,7 +16,7 @@ class GetAuthorsController : GetAuthorsApi {
   lateinit var authorRepository: AuthorRepository
 
   override fun getAuthors(firstName: String?, lastName: String?): ResponseEntity<AuthorsResponse> {
-    return ResponseEntity(AuthorsResponse(authors = authorRepository.findAll().map {
+    return ResponseEntity(AuthorsResponse(authors = authorRepository.listAll().map {
       Author(
         authorId = it.authorId,
         authorName = it.authorName!!,

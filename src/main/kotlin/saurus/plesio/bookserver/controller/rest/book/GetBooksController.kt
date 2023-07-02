@@ -16,7 +16,7 @@ class GetBooksController : GetBooksApi {
   lateinit var bookRepository: BookRepository
 
   override fun getBooks(title: String?, isbnCode: String?): ResponseEntity<BooksResponse> {
-    return ResponseEntity(BooksResponse(books = bookRepository.findAll().map {
+    return ResponseEntity(BooksResponse(books = bookRepository.listAll().map {
       Book(
         bookId = it.bookId!!,
         bookTitle = it.bookTitle!!,
