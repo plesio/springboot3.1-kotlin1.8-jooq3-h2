@@ -51,7 +51,7 @@ class BookRepository(
     dslContext.transaction { c ->
       DSL.using(c)
         .newRecord(BOOK).also {
-          it.bookId = ULID.random()
+          it.bookId = newBookId
           it.bookTitle = bookTitle
           it.isbnCode = isbnCode ?: ""
           it.publishedDate = publishedDate
@@ -67,7 +67,6 @@ class BookRepository(
         }
     }
     return newBookId
-
   }
 
   fun update(book: Book): Int {

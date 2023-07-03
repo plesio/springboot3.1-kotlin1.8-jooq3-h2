@@ -23,6 +23,9 @@ class PostAuthorController : PostInsertAuthorApi {
     if(author.authorName.isBlank()) {
       throw ResponseStatusException(HttpStatus.BAD_REQUEST, "authorName is blank")
     }
+    // TODO ISBNコードのバリデーションをすること(何もせず素通りさせるとと意味のないSQLエラーが返却されるしただの負荷.
+
+
     return try {
       val newAuthorId = authorRepository.insert(author.authorName, author.birthYear, author.remarks ?: "")
       ResponseEntity(AuthorIdResponse(authorId = newAuthorId), HttpStatus.OK)
