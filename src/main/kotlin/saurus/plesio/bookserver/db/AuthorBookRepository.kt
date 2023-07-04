@@ -1,3 +1,4 @@
+@file:Suppress("unused")
 package saurus.plesio.bookserver.db
 
 import org.jooq.DSLContext

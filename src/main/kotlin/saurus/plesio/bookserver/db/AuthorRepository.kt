@@ -1,3 +1,4 @@
+@file:Suppress("unused")
 package saurus.plesio.bookserver.db
 
 import com.github.guepardoapps.kulid.ULID

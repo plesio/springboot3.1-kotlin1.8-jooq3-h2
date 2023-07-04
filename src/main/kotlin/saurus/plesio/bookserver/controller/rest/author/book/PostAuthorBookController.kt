@@ -1,13 +1,12 @@
 package saurus.plesio.bookserver.controller.rest.author.book
 
 
-import org.jooq.impl.DSL
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
-import saurus.plesio.bookserver.db.AuthorBookRepository
 import saurus.plesio.bookserver.db.AuthorRepository
 import saurus.plesio.bookserver.db.BookRepository
 import saurus.plesio.bookserver.jooq.tables.references.BOOK
@@ -15,11 +14,11 @@ import saurus.plesio.bookserver.openapi.generated.controller.PostInsertAuthorBoo
 import saurus.plesio.bookserver.openapi.generated.model.Book
 import saurus.plesio.bookserver.openapi.generated.model.BookIdResponse
 
-
 @RestController
 class PostAuthorBookController : PostInsertAuthorBookApi {
-  @Autowired
-  lateinit var authorBookRepository: AuthorBookRepository
+  companion object {
+    val logger = LoggerFactory.getLogger(PostAuthorBookController::class.java)!!
+  }
 
   @Autowired
   lateinit var bookRepository: BookRepository
@@ -28,6 +27,7 @@ class PostAuthorBookController : PostInsertAuthorBookApi {
   lateinit var authorRepository: AuthorRepository
 
   override fun postInsertAuthorBook(authorId: String, book: Book): ResponseEntity<BookIdResponse> {
+    logger.info("postInsertAuthorBook: authorId: $authorId, book: $book")
     // validation - exists params
     if (authorId.isBlank()) {
       throw ResponseStatusException(HttpStatus.NOT_FOUND, "authorId is not match.")

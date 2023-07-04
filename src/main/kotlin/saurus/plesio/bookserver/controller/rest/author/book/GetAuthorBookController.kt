@@ -1,6 +1,8 @@
 package saurus.plesio.bookserver.controller.rest.author.book
 
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -11,9 +13,12 @@ import saurus.plesio.bookserver.openapi.generated.controller.GetAuthorBooksApi
 import saurus.plesio.bookserver.openapi.generated.model.Book
 import saurus.plesio.bookserver.openapi.generated.model.BooksResponse
 
-
 @RestController
 class GetAuthorBookController : GetAuthorBooksApi {
+  companion object {
+    val logger: Logger = LoggerFactory.getLogger(GetAuthorBookController::class.java)!!
+  }
+
   @Autowired
   lateinit var authorBookRepository: AuthorBookRepository
 
@@ -21,6 +26,7 @@ class GetAuthorBookController : GetAuthorBooksApi {
   lateinit var bookRepository: BookRepository
 
   override fun getAuthorBooks(authorId: String, bookTitle: String?, isbnCode: String?): ResponseEntity<BooksResponse> {
+    logger.info("getAuthorBooks: authorId: $authorId, bookTitle: $bookTitle, isbnCode: $isbnCode")
     if (authorId.isBlank()) {
       return ResponseEntity(HttpStatus.NOT_FOUND)
     }
