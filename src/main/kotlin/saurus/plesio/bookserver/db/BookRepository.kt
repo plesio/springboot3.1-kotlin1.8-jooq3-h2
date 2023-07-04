@@ -1,3 +1,4 @@
+@file:Suppress("unused")
 package saurus.plesio.bookserver.db
 
 import com.github.guepardoapps.kulid.ULID
@@ -96,7 +97,7 @@ class BookRepository(
 
   fun delete(bookId: String): Int {
     this.dslContext.deleteFrom(AUTHOR_BOOK).where(AUTHOR_BOOK.BOOK_ID.eq(bookId)).execute()
-    return dslContext.deleteFrom(BOOK).where(BOOK.BOOK_ID.eq(bookId)).execute();
+    return dslContext.deleteFrom(BOOK).where(BOOK.BOOK_ID.eq(bookId)).execute()
   }
 
   fun deleteAll(): Int {

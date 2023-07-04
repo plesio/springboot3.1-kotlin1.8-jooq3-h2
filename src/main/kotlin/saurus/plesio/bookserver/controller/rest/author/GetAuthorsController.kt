@@ -1,5 +1,6 @@
 package saurus.plesio.bookserver.controller.rest.author
 
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -9,13 +10,17 @@ import saurus.plesio.bookserver.openapi.generated.controller.GetAuthorsApi
 import saurus.plesio.bookserver.openapi.generated.model.Author
 import saurus.plesio.bookserver.openapi.generated.model.AuthorsResponse
 
-
 @RestController
 class GetAuthorsController : GetAuthorsApi {
+  companion object {
+    val logger = LoggerFactory.getLogger(GetAuthorsController::class.java)!!
+  }
+
   @Autowired
   lateinit var authorRepository: AuthorRepository
 
   override fun getAuthors(authorName: String?): ResponseEntity<AuthorsResponse> {
+    logger.info("getAuthors: authorName: $authorName")
     return ResponseEntity(AuthorsResponse(authors = authorRepository.listByLikeName(authorName).map {
       Author(
         authorId = it.authorId,

@@ -1,6 +1,6 @@
 package saurus.plesio.bookserver.controller.rest.book
 
-import org.jooq.impl.DSL
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -12,13 +12,17 @@ import saurus.plesio.bookserver.openapi.generated.controller.PatchUpdateBookApi
 import saurus.plesio.bookserver.openapi.generated.model.Book
 import saurus.plesio.bookserver.openapi.generated.model.BookIdResponse
 
-
 @RestController
 class PatchBookController : PatchUpdateBookApi {
+  companion object {
+    val logger = LoggerFactory.getLogger(PatchBookController::class.java)!!
+  }
+
   @Autowired
   lateinit var bookRepository: BookRepository
 
   override fun patchUpdateBook(bookId: String, book: Book): ResponseEntity<BookIdResponse> {
+    logger.info("patchUpdateBook: bookId: $bookId, book: $book")
     if (bookId.isBlank() || bookId != book.bookId) {
       throw ResponseStatusException(HttpStatus.NOT_FOUND, "bookId is not match.")
     }
