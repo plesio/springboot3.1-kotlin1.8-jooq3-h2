@@ -115,6 +115,7 @@ jooq {
             isRecords = true
             isPojos = true
             isDaos = true
+            isValidationAnnotations = true
           }
           target.apply {
             packageName = "saurus.plesio.bookserver.jooq"
