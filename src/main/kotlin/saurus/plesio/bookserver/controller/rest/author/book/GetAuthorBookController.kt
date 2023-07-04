@@ -20,21 +20,34 @@ class GetAuthorBookController : GetAuthorBooksApi {
   @Autowired
   lateinit var bookRepository: BookRepository
 
-  override fun getAuthorBooks(authorId: String): ResponseEntity<BooksResponse> {
+  override fun getAuthorBooks(authorId: String, bookTitle: String?, isbnCode: String?): ResponseEntity<BooksResponse> {
     if (authorId.isBlank()) {
       return ResponseEntity(HttpStatus.NOT_FOUND)
     }
     // MEMO: その Author が存在するかの判定はしない.
     val bookIds = authorBookRepository.listByAuthorId(authorId).mapNotNull { it.bookId }
-    return ResponseEntity(BooksResponse(books = bookRepository.listByBooksIds(bookIds).map {
-      Book(
-        bookId = it.bookId!!,
-        bookTitle = it.bookTitle!!,
-        isbnCode = it.isbnCode ?: "",
-        publishedDate = it.publishedDate!!,
-        remarks = it.remarks ?: ""
-      )
-    }), HttpStatus.OK)
+    val books = bookRepository.listByBooksIds(bookIds).asSequence() //
+      .filter { book ->
+        when {
+          bookTitle.isNullOrBlank() -> true
+          else -> (book.bookTitle ?: "").contains(bookTitle)
+        }
+      }.filter { book ->
+        when {
+          isbnCode.isNullOrBlank() -> true
+          else -> book.isbnCode == isbnCode
+        }
+      }.map {
+        Book(
+          bookId = it.bookId!!,
+          bookTitle = it.bookTitle!!,
+          isbnCode = it.isbnCode ?: "",
+          publishedDate = it.publishedDate!!,
+          remarks = it.remarks ?: ""
+        )
+      }.toList()
+
+    return ResponseEntity(BooksResponse(books = books), HttpStatus.OK)
   }
 
 

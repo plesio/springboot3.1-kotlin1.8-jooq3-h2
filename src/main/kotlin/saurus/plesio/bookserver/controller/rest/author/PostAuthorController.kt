@@ -25,7 +25,7 @@ class PostAuthorController : PostInsertAuthorApi {
       throw ResponseStatusException(HttpStatus.BAD_REQUEST, "authorName is blank")
     }
     // validation - varchar max length
-    val authorNameMaxLength = DSL.field(AUTHOR.AUTHOR_NAME.name).dataType.length()
+    val authorNameMaxLength = AUTHOR.field(AUTHOR.AUTHOR_NAME)?.dataType?.length() ?: -1
     if (authorNameMaxLength < author.authorName.length) {
       throw ResponseStatusException(HttpStatus.BAD_REQUEST, "authorName is too long. (MAX: ${authorNameMaxLength})")
     }

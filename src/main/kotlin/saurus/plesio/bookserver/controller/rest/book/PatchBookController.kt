@@ -23,7 +23,7 @@ class PatchBookController : PatchUpdateBookApi {
       throw ResponseStatusException(HttpStatus.NOT_FOUND, "bookId is not match.")
     }
     // validation - varchar max length
-    val isbnCodeMaxLength = DSL.field(BOOK.ISBN_CODE.name).dataType.length()
+    val isbnCodeMaxLength = BOOK.field(BOOK.ISBN_CODE)?.dataType?.length() ?: -1
     if (book.isbnCode != null && isbnCodeMaxLength < book.isbnCode.length) {
       throw ResponseStatusException(HttpStatus.BAD_REQUEST, "isbnCode is too long. (MAX: ${isbnCodeMaxLength})")
     }

@@ -19,13 +19,32 @@ class BookRepository(
     return this.dslContext.select().from(BOOK).where(BOOK.BOOK_ID.eq(bookId)).fetchOne()?.let { toModel(it) }
   }
 
-  fun listBytName(bookTitle: String? = null): List<Book> {
+  fun list(bookTitle: String?, isbnCode: String?): List<Book> {
+    val isTitleBlank = bookTitle.isNullOrBlank()
+    val isIsbnCodeBlank = isbnCode.isNullOrBlank()
+
+    return if (isTitleBlank && isIsbnCodeBlank) {
+      listAll()
+    } else if (isTitleBlank) {
+      listByIsbnCode(isbnCode)
+    } else if (isIsbnCodeBlank) {
+      listByLikeTitle(bookTitle)
+    } else {
+      this.dslContext.select().from(BOOK).where(
+        BOOK.BOOK_TITLE.like("%$bookTitle%").and(BOOK.ISBN_CODE.eq(isbnCode))).fetch()
+        .map { toModel(it) }
+    }
+  }
+
+  fun listByLikeTitle(bookTitle: String? = null): List<Book> {
     return this.dslContext.select().from(BOOK).where(
-      if (bookTitle != null) {
-        BOOK.BOOK_TITLE.eq(bookTitle)
-      } else {
-        DSL.trueCondition()
-      }
+      (if (bookTitle.isNullOrBlank()) DSL.trueCondition() else BOOK.BOOK_TITLE.like("%$bookTitle%"))
+    ).fetch().map { toModel(it) }
+  }
+
+  fun listByIsbnCode(isbnCode: String? = null): List<Book> {
+    return this.dslContext.select().from(BOOK).where(
+      (if (isbnCode.isNullOrBlank()) DSL.trueCondition() else BOOK.ISBN_CODE.eq(isbnCode))
     ).fetch().map { toModel(it) }
   }
 
@@ -93,4 +112,5 @@ class BookRepository(
     record.getValue(BOOK.PUBLISHED_DATE),
     record.getValue(BOOK.REMARKS),
   )
+
 }

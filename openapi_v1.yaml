@@ -117,6 +117,16 @@ paths:
             type: string
           required: true
           description: The author ID
+        - in: query
+          name: bookTitle
+          schema:
+            type: string
+          description: The book title
+        - in: query
+          name: isbnCode
+          schema:
+            type: string
+          description: The book isbn code
       operationId: GetAuthorBooks
       responses:
         '200':
@@ -163,7 +173,7 @@ paths:
       description: DB に登録されている書籍を全て取得する
       parameters:
         - in: query
-          name: title
+          name: bookTitle
           schema:
             type: string
           description: The book title

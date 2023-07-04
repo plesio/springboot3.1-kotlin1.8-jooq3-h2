@@ -20,14 +20,15 @@ class AuthorRepository(
       .fetchOne()?.let { toModel(it) }
   }
 
-  fun listBytName(authorName: String? = null): List<Author> {
+  /** 著者名をキーワードから includes 判定で探す.  */
+  fun listByLikeName(authorName: String? = null): List<Author> {
     return this.dslContext.select()
       .from(AUTHOR)
       .where(
-        if (authorName != null) {
-          AUTHOR.AUTHOR_NAME.eq(authorName)
-        } else {
+        if (authorName.isNullOrBlank()) {
           DSL.trueCondition()
+        } else {
+          AUTHOR.AUTHOR_NAME.like("%$authorName%")
         }
       )
       .fetch().map { toModel(it) }
