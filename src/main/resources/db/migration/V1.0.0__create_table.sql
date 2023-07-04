@@ -1,18 +1,17 @@
 CREATE TABLE author
 (
-    author_id      VARCHAR(36)  NOT NULL PRIMARY KEY,
-    first_name     VARCHAR(50)  ,
-    last_name      VARCHAR(50)  NOT NULL,
-    birth_year     INTEGER      ,
+    author_id      VARCHAR(36)   NOT NULL PRIMARY KEY,
+    author_name    VARCHAR(100)  NOT NULL,
+    birth_year     INTEGER               ,
     remarks        text
 );
 
 CREATE TABLE book
 (
     book_id        VARCHAR(36)  NOT NULL PRIMARY KEY,
-    title          text         NOT NULL,
-    isbn_code      VARCHAR(20)  NOT NULL,
-    published_date DATE         NOT NULL,
+    book_title          text         NOT NULL,
+    isbn_code      VARCHAR(20)  ,
+    published_date DATE         ,
     remarks        text
 );
 
@@ -20,7 +19,6 @@ CREATE TABLE author_book
 (
     author_id      VARCHAR(36) NOT NULL,
     book_id        VARCHAR(36) NOT NULL,
-    remarks        text         ,
 
     PRIMARY KEY (author_id, book_id),
     CONSTRAINT fk_ab_author FOREIGN KEY (author_id) REFERENCES author (author_id)

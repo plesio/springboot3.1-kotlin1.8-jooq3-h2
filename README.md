@@ -28,6 +28,7 @@ $ mkdir db_data
 $ docker-compose up -d
   >> これで mariadb が立ち上がる.
 $ ./gradlew flywayMigrate
+$ ./gradlew generateJooq
 $ ./gradlew bootRun
 ```
 
