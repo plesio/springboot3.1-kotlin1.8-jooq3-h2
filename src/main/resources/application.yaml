@@ -15,6 +15,13 @@ spring:
   devtools:
     restart:
       enabled: true
+
+  flyway:
+    enabled: false
+
+  jooq:
+    sql-dialect: mariadb
+
 server:
   error:
     include-stacktrace: never
