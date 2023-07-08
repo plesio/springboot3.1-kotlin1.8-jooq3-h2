@@ -24,4 +24,6 @@ class AuthorBookRepository(
     record.getValue(AUTHOR_BOOK.AUTHOR_ID)!!,
     record.getValue(BOOK.BOOK_ID)!!,
   )
+
+
 }

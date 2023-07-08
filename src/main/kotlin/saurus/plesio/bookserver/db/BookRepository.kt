@@ -97,12 +97,12 @@ class BookRepository(
 
   fun delete(bookId: String): Int {
     this.dslContext.deleteFrom(AUTHOR_BOOK).where(AUTHOR_BOOK.BOOK_ID.eq(bookId)).execute()
-    return dslContext.deleteFrom(BOOK).where(BOOK.BOOK_ID.eq(bookId)).execute()
+    return this.dslContext.deleteFrom(BOOK).where(BOOK.BOOK_ID.eq(bookId)).execute()
   }
 
   fun deleteAll(): Int {
     this.dslContext.deleteFrom(AUTHOR_BOOK).execute() // こっちも削除することになるけど、こっちは返さない。
-    return dslContext.deleteFrom(BOOK).execute()
+    return this.dslContext.deleteFrom(BOOK).execute()
   }
 
 

@@ -36,8 +36,10 @@ $ ./gradlew bootRun
 
 - 制限事項
   - M1 Mac の場合 Docker Desktop を入れないとテストできない。
-  - Rancher Desktop の Docker デフォルトだと TestContainers がパスを認識しないバグがある？っぽい。
-    - 地味にめんどくさい。本当にめんどくさい。
+    - Rancher Desktop の Docker デフォルトだと TestContainers がパスを認識しないバグがある？っぽい。
+      - 地味にめんどくさい。本当にめんどくさい。
+  - 先にDebug Runを走らせる過程で、jooq を実行しておくこと。
+    - 特に、Test向けに jooq の自動実行の設定をしていないため。
 
 ```shell
 $ ./gradlew test
