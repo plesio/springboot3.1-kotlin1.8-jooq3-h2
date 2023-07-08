@@ -13,14 +13,13 @@ import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
+import org.springframework.test.web.servlet.patch
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import saurus.plesio.bookserver.db.AuthorRepository
 import saurus.plesio.bookserver.db.BookRepository
 import saurus.plesio.bookserver.jooq.tables.pojos.Book
-import saurus.plesio.bookserver.util.customObjectMapper
-import saurus.plesio.bookserver.util.initTestContainer
-import saurus.plesio.bookserver.util.migrateFlywayOnBeforeSpec
+import saurus.plesio.bookserver.util.*
 import java.time.LocalDate
 
 
@@ -37,12 +36,12 @@ internal class BookControllerTest(
   beforeSpec {
     migrateFlywayOnBeforeSpec(container)
     bookRepository.deleteAll()
-    //authorRepository.deleteAll()
+    authorRepository.deleteAll()
   }
 
   afterTest {
     bookRepository.deleteAll()
-    //authorRepository.deleteAll()
+    authorRepository.deleteAll()
   }
 
   test("simple 1 get and check") {
@@ -64,34 +63,32 @@ internal class BookControllerTest(
     val retBook = customObjectMapper.readValue(retJsonTxt, Book::class.java)
     retBook.bookTitle shouldBe "DUMMY BOOK"
   }
-//
-//  test("get from empty db.") {
-//    mockMvc.get("/api/v1/authors/dummy")
-//      .andExpect {
-//        status { isNotFound() }
-//      }
-//  }
-//
-//  test("patch 1 user and check") {
-//    val authorName = generateAuthorName()
-//    val authorBirthYear = (1960..2011).random()
-//    val authorId = bookRepository.insert(authorName, authorBirthYear, "")
-//
-//    val newAuthorName = generateAuthorName()
-//    val newAuthor = Author(authorId, newAuthorName, authorBirthYear, "")
-//    mockMvc.patch("/api/v1/authors/$authorId") {
-//      contentType = MediaType.APPLICATION_JSON
-//      content = customObjectMapper.writeValueAsString(newAuthor.copy())
-//    }.andExpect {
-//      status { isOk() }
-//    }
-//
-//    val dbAuthor = bookRepository.findById(authorId)
-//    // logger.info(dbAuthor.toString() + ", " + newAuthor.toString())
-//    dbAuthor?.authorName shouldBe authorName
-//    dbAuthor?.authorName shouldBe newAuthorName
-//  }
 
+  test("simple 1 patch and check") {
+    val dummyAuthorId = authorRepository.insert("山田 光三郎", 1960, "")
+    val publishDate = LocalDate.of((1960..2011).random(), (1..12).random(), (1..28).random())
+    val oldBookTitle = generateBookTitle()
+    val targetBookId = bookRepository.insert(dummyAuthorId, oldBookTitle, null, publishDate, "")
+
+    val newBookTitle = generateBookTitle()
+    val newIsbn = (1..13).map { (0..9).random() }.joinToString("")
+    val patchBook = Book(targetBookId, newBookTitle, newIsbn, publishDate, "")
+    logger.info("TEST-TEST: patchBook: $patchBook, oldTitle=$oldBookTitle")
+
+    mockMvc.patch("/api/v1/books/$targetBookId") {
+      contentType = MediaType.APPLICATION_JSON
+      content = customObjectMapper.writeValueAsString(patchBook.copy())
+    }
+      .andExpect {
+        status { isOk() }
+      }
+
+    val dbBook = bookRepository.findById(targetBookId)
+    dbBook shouldNotBe null
+    dbBook?.bookTitle shouldNotBe oldBookTitle
+    dbBook?.bookTitle shouldBe newBookTitle
+    dbBook?.isbnCode shouldBe newIsbn
+  }
 
 }) {
   companion object {

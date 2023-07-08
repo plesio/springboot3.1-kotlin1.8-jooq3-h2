@@ -51,7 +51,8 @@ internal class AuthorControllerTest(
     authorRepository.listAll().size shouldBe 1
   }
 
-  test("simple 1 get and check") {
+  val test1 = "simple 1 get and check"
+  test(test1) {
     val authorName = generateAuthorName()
     val authorBirthYear = (1960..2011).random()
     val authorId = authorRepository.insert(authorName, authorBirthYear, "")
@@ -68,10 +69,11 @@ internal class AuthorControllerTest(
     retJsonTxt.isBlank() shouldNotBe true
     retJsonTxt shouldNotBe "{}"
     val retAuthor = customObjectMapper.readValue(retJsonTxt, Author::class.java)
+    logger.info("TEST-TEST:${test1} retAuthor:${retAuthor}")
     (retAuthor.authorName == authorName) shouldBe true
   }
 
-  test("get from empty db.") {
+  test("get not exist author.") {
     mockMvc.get("/api/v1/authors/dummy")
       .andExpect {
         status { isNotFound() }
