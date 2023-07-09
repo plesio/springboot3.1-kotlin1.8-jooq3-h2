@@ -30,6 +30,8 @@ buildscript {
   }
 }
 
+extra["testcontainersVersion"] = "1.18.3"
+
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter-web")
   implementation("org.springframework.boot:spring-boot-starter-validation")
@@ -37,21 +39,16 @@ dependencies {
   implementation("org.jetbrains.kotlin:kotlin-reflect")
   implementation("com.github.guepardoapps:kulid:2.0.0.0")
 
-
-  // -- TEST
-  developmentOnly("org.springframework.boot:spring-boot-devtools")
-  testImplementation("org.springframework.boot:spring-boot-starter-test")
-
   // -- DB
   runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
   runtimeOnly("com.mysql:mysql-connector-j:8.0.33") // for flyway
+  implementation("org.flywaydb:flyway-mysql")
 
   // -- jOOQ
   implementation("org.springframework.boot:spring-boot-starter-jooq") {
     exclude(group = "org.jooq", module = "jooq")
   }
   implementation("org.jooq:jooq:3.18.5")
-
   jooqGenerator("com.mysql:mysql-connector-j:8.0.33")
   jooqGenerator("jakarta.xml.bind:jakarta.xml.bind-api:3.0.1")
 
@@ -61,7 +58,25 @@ dependencies {
   compileOnly("jakarta.validation:jakarta.validation-api")
   compileOnly("jakarta.annotation:jakarta.annotation-api:2.1.1")
 
+  // -- TEST
+  developmentOnly("org.springframework.boot:spring-boot-devtools")
+  testImplementation("org.springframework.boot:spring-boot-starter-test")
+  testImplementation("io.kotest:kotest-runner-junit5-jvm:5.6.2")
+  testImplementation("io.kotest:kotest-assertions-core-jvm:5.6.2")
+  testImplementation("io.kotest.extensions:kotest-extensions-spring:1.1.2")
+  testImplementation("io.kotest.extensions:kotest-extensions-testcontainers:2.0.1")
+  testImplementation("org.testcontainers:testcontainers:${property("testcontainersVersion")}")
+  testImplementation("org.testcontainers:junit-jupiter:${property("testcontainersVersion")}")
+  testImplementation("org.testcontainers:mariadb:${property("testcontainersVersion")}")
+  testImplementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310") // MEMO: 結果比較時に Java8のLocalDate型をパースできないため
 }
+
+dependencyManagement {
+  imports {
+    mavenBom("org.testcontainers:testcontainers-bom:${property("testcontainersVersion")}")
+  }
+}
+
 
 tasks.withType<KotlinCompile> {
   kotlinOptions {

@@ -1,4 +1,5 @@
 @file:Suppress("unused")
+
 package saurus.plesio.bookserver.db
 
 import com.github.guepardoapps.kulid.ULID
@@ -32,7 +33,8 @@ class BookRepository(
       listByLikeTitle(bookTitle)
     } else {
       this.dslContext.select().from(BOOK).where(
-        BOOK.BOOK_TITLE.like("%$bookTitle%").and(BOOK.ISBN_CODE.eq(isbnCode))).fetch()
+        BOOK.BOOK_TITLE.like("%$bookTitle%").and(BOOK.ISBN_CODE.eq(isbnCode))
+      ).fetch()
         .map { toModel(it) }
     }
   }
@@ -90,19 +92,23 @@ class BookRepository(
   }
 
   fun update(book: Book): Int {
-    return this.dslContext.update(BOOK).set(BOOK.BOOK_TITLE, book.bookTitle).set(BOOK.ISBN_CODE, book.isbnCode)
-      .set(BOOK.PUBLISHED_DATE, book.publishedDate).set(BOOK.REMARKS, book.remarks).where(BOOK.BOOK_ID.eq(book.bookId))
+    return this.dslContext.update(BOOK) //
+      .set(BOOK.BOOK_TITLE, book.bookTitle) //
+      .set(BOOK.ISBN_CODE, book.isbnCode) //
+      .set(BOOK.PUBLISHED_DATE, book.publishedDate) //
+      .set(BOOK.REMARKS, book.remarks) //
+      .where(BOOK.BOOK_ID.eq(book.bookId))
       .execute()
   }
 
   fun delete(bookId: String): Int {
     this.dslContext.deleteFrom(AUTHOR_BOOK).where(AUTHOR_BOOK.BOOK_ID.eq(bookId)).execute()
-    return dslContext.deleteFrom(BOOK).where(BOOK.BOOK_ID.eq(bookId)).execute()
+    return this.dslContext.deleteFrom(BOOK).where(BOOK.BOOK_ID.eq(bookId)).execute()
   }
 
   fun deleteAll(): Int {
     this.dslContext.deleteFrom(AUTHOR_BOOK).execute() // こっちも削除することになるけど、こっちは返さない。
-    return dslContext.deleteFrom(BOOK).execute()
+    return this.dslContext.deleteFrom(BOOK).execute()
   }
 
 
