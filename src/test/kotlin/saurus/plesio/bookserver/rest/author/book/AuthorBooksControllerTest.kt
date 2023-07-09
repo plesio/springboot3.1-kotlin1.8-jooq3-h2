@@ -1,4 +1,4 @@
-package saurus.plesio.bookserver.rest.book
+package saurus.plesio.bookserver.rest.author.book
 
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
@@ -16,10 +16,7 @@ import org.testcontainers.junit.jupiter.Testcontainers
 import saurus.plesio.bookserver.db.AuthorRepository
 import saurus.plesio.bookserver.db.BookRepository
 import saurus.plesio.bookserver.openapi.generated.model.BooksResponse
-import saurus.plesio.bookserver.util.customObjectMapper
-import saurus.plesio.bookserver.util.generateBookTitle
-import saurus.plesio.bookserver.util.initTestContainer
-import saurus.plesio.bookserver.util.migrateFlywayOnBeforeSpec
+import saurus.plesio.bookserver.util.*
 import java.time.LocalDate
 
 
@@ -28,7 +25,7 @@ import java.time.LocalDate
 @ActiveProfiles("integration")
 @AutoConfigureMockMvc
 @Testcontainers
-internal class BooksControllerTest(
+internal class AuthorBooksControllerTest(
   private val mockMvc: MockMvc,
   private val bookRepository: BookRepository,
   private val authorRepository: AuthorRepository
@@ -40,12 +37,14 @@ internal class BooksControllerTest(
   }
 
   afterTest {
-    bookRepository.deleteAll()
-    authorRepository.deleteAll()
+    // 消さずに増加していくテストを許可する.
+    //    bookRepository.deleteAll()
+    //    authorRepository.deleteAll()
   }
 
   test("simple get and check empty.") {
-    mockMvc.get("/api/v1/books")
+    val dummyAuthorId = authorRepository.insert("山田 光三郎", 1960, "")
+    mockMvc.get("/api/v1/authors/$dummyAuthorId/books")
       .andExpect {
         status { isOk() }
       }
@@ -54,96 +53,126 @@ internal class BooksControllerTest(
       .contentAsString shouldBe """{"books":[]}"""
   }
 
-  val test2 = "find from 1000 records and check response."
+  val test2 = "find from + 10*100 book-records and check response."
   test(test2) {
-    val dummyAuthorId = authorRepository.insert("山田 光三郎", 1960, "")
+    randomInsertAuthorBooks(9, 100, authorRepository, bookRepository)
 
-    val bookTitles1000 = (1..999).map { generateBookTitle() }.plus("世界の果てまでいけない8")
+    // 対象の著者の周りを作成.
+    val dummyAuthorId = authorRepository.insert("山田 光三郎2", 1960, "")
+
+    val bookTitles100 = (1..100).map { generateBookTitle() }
+    bookTitles100.map { bookTitle ->
+      val publishDate = LocalDate.of((1960..2011).random(), (1..12).random(), (1..28).random())
+      bookRepository.insert(dummyAuthorId, bookTitle, null, publishDate, "")
+    }
+
+    val before = System.currentTimeMillis()
+    val resultStr = mockMvc.get("/api/v1/authors/$dummyAuthorId/books")
+      .andExpect {
+        status { isOk() }
+      }
+      .andReturn()
+      .response
+      .contentAsString
+
+    val after = System.currentTimeMillis()
+    // jackson で Response に parse
+    val booksResponse = customObjectMapper.readValue(resultStr, BooksResponse::class.java)
+    logger.info("TEST-TEST:${test2}: response-time=${after - before} ms, response-size=${booksResponse.books.size} , db-target-count= may be 100")
+    booksResponse.books.size shouldBe 100
+  }
+
+
+  val test3 = "find from + 100 * 100 records and check response."
+  test(test3) {
+    randomInsertAuthorBooks(99, 100, authorRepository, bookRepository)
+
+    // 対象の著者の周りを作成.
+    val dummyAuthorId = authorRepository.insert("山田 光三郎3", 1960, "")
+
+    val bookTitles100 = (1..100).map { generateBookTitle() }
+    bookTitles100.map { bookTitle ->
+      val publishDate = LocalDate.of((1960..2011).random(), (1..12).random(), (1..28).random())
+      bookRepository.insert(dummyAuthorId, bookTitle, null, publishDate, "")
+    }
+
+    val before = System.currentTimeMillis()
+    val resultStr = mockMvc.get("/api/v1/authors/$dummyAuthorId/books")
+      .andExpect {
+        status { isOk() }
+      }
+      .andReturn()
+      .response
+      .contentAsString
+
+    val after = System.currentTimeMillis()
+    // jackson で Response に parse
+    val booksResponse = customObjectMapper.readValue(resultStr, BooksResponse::class.java)
+    logger.info("TEST-TEST:${test3}: response-time=${after - before} ms, response-size=${booksResponse.books.size} , db-target-count= may be 100")
+    booksResponse.books.size shouldBe 100
+  }
+
+  val test4= "find from + 20 * 500 records and check response."
+  test(test4) {
+    randomInsertAuthorBooks(20, 500, authorRepository, bookRepository)
+
+    // 対象の著者の周りを作成.
+    val dummyAuthorId = authorRepository.insert("山田 光三郎4", 1960, "")
+
+    val bookTitles500 = (1..500).map { generateBookTitle() }
+    bookTitles500.map { bookTitle ->
+      val publishDate = LocalDate.of((1960..2011).random(), (1..12).random(), (1..28).random())
+      bookRepository.insert(dummyAuthorId, bookTitle, null, publishDate, "")
+    }
+
+    val before = System.currentTimeMillis()
+    val resultStr = mockMvc.get("/api/v1/authors/$dummyAuthorId/books")
+      .andExpect {
+        status { isOk() }
+      }
+      .andReturn()
+      .response
+      .contentAsString
+
+    val after = System.currentTimeMillis()
+    // jackson で Response に parse
+    val booksResponse = customObjectMapper.readValue(resultStr, BooksResponse::class.java)
+    logger.info("TEST-TEST:${test4}: response-time=${after - before} ms, response-size=${booksResponse.books.size} , db-target-count= may be 500")
+    booksResponse.books.size shouldBe 500
+  }
+
+  val test5= "find from + 3 * 1000 records and check response."
+  test(test4) {
+    randomInsertAuthorBooks(2, 1000, authorRepository, bookRepository)
+
+    // 対象の著者の周りを作成.
+    val dummyAuthorId = authorRepository.insert("山田 光三郎5", 1960, "")
+
+    val bookTitles1000 = (1..1000).map { generateBookTitle() }
     bookTitles1000.map { bookTitle ->
       val publishDate = LocalDate.of((1960..2011).random(), (1..12).random(), (1..28).random())
       bookRepository.insert(dummyAuthorId, bookTitle, null, publishDate, "")
     }
-    val targetFirstNameSize = bookTitles1000.filter { it.contains("世界") }.size
 
     val before = System.currentTimeMillis()
-    val resultStr = mockMvc.get("/api/v1/books?bookTitle=世界")
+    val resultStr = mockMvc.get("/api/v1/authors/$dummyAuthorId/books")
       .andExpect {
         status { isOk() }
       }
       .andReturn()
       .response
       .contentAsString
+
     val after = System.currentTimeMillis()
     // jackson で Response に parse
     val booksResponse = customObjectMapper.readValue(resultStr, BooksResponse::class.java)
-    logger.info("TEST-TEST:${test2}: response-time=${after - before} ms, target=世界, response-size=${booksResponse.books.size} , db-target-count=$targetFirstNameSize")
-    booksResponse.books.size shouldBe targetFirstNameSize
+    logger.info("TEST-TEST:${test5}: response-time=${after - before} ms, response-size=${booksResponse.books.size} , db-target-count= may be 1000")
+    booksResponse.books.size shouldBe 1000
   }
-
-
-  val test3 = "find from 10000 records and check response."
-  test(test3) {
-    val dummyAuthorId = authorRepository.insert("山田 光三郎", 1960, "")
-
-    val bookTitles10000 = (1..9999).map { generateBookTitle() }.plus("世界の果てまでいけない8")
-    bookTitles10000.map { bookTitle ->
-      val publishDate = LocalDate.of((1960..2011).random(), (1..12).random(), (1..28).random())
-      bookRepository.insert(dummyAuthorId, bookTitle, null, publishDate, "")
-    }
-    val targetFirstNameSize = bookTitles10000.filter { it.contains("世界") }.size
-
-    val before = System.currentTimeMillis()
-    val resultStr = mockMvc.get("/api/v1/books?bookTitle=世界")
-      .andExpect {
-        status { isOk() }
-      }
-      .andReturn()
-      .response
-      .contentAsString
-    val after = System.currentTimeMillis()
-    // jackson で Response に parse
-    val booksResponse = customObjectMapper.readValue(resultStr, BooksResponse::class.java)
-    logger.info("${test3}: response-time=${after - before} ms, target=世界, response-size=${booksResponse.books.size} , db-target-count=$targetFirstNameSize")
-    booksResponse.books.size shouldBe targetFirstNameSize
-  }
-
-
-  val test4 = "find by ISBN from 10000 records and check response."
-  test(test4) {
-    val dummyAuthorId = authorRepository.insert("山田 光三郎", 1960, "")
-    val bookTitles9999 = (1..9999).map { generateBookTitle() }
-    // 重複しないように 13桁の ISBN を生成
-    val isbnCodes9999 = (1..9999).map { idx -> (1..8).map { (0..9).random() }.joinToString("") + idx }
-    bookTitles9999.mapIndexed() { idx, bookTitle ->
-      val publishDate = LocalDate.of((1960..2011).random(), (1..12).random(), (1..28).random())
-      bookRepository.insert(dummyAuthorId, bookTitle, isbnCodes9999[idx], publishDate, "")
-    }
-    // 手動で1個追加
-    val targetIsbn = (1..8).map { (0..9).random() }.joinToString("") + "10000"
-    val d = LocalDate.of((1960..2011).random(), (1..12).random(), (1..28).random())
-    bookRepository.insert(dummyAuthorId, "世界の果てまでいけない8", targetIsbn, d, "")
-
-    // test
-    val before = System.currentTimeMillis()
-    val resultStr = mockMvc.get("/api/v1/books?isbnCode=${targetIsbn}")
-      .andExpect {
-        status { isOk() }
-      }
-      .andReturn()
-      .response
-      .contentAsString
-    val after = System.currentTimeMillis()
-    // jackson で Response に parse
-    val booksResponse = customObjectMapper.readValue(resultStr, BooksResponse::class.java)
-    val responseSize = booksResponse.books.size
-    logger.info("${test4}: response-time=${after - before} ms, target=${targetIsbn}, response-size=${responseSize}")
-    responseSize shouldBe 1
-  }
-
 
 }) {
   companion object {
-    val logger: Logger = LoggerFactory.getLogger(BookControllerTest::class.java)!!
+    val logger: Logger = LoggerFactory.getLogger(AuthorBooksControllerTest::class.java)!!
 
     @Container
     val container = initTestContainer()

@@ -67,7 +67,7 @@ internal class AuthorsControllerTest(
       .response
       .contentAsString
     val after = System.currentTimeMillis()
-    // jackson で List<Author> に parse
+    // jackson で Response に parse
     val authorsResponse = customObjectMapper.readValue(resultStr, AuthorsResponse::class.java)
     logger.info("TEST-TEST:${test2}: response-time=${after - before} ms, target=山田, response-size=${authorsResponse.authors.size} , db-target-count=$targetFirstNameSize")
     authorsResponse.authors.size shouldBe targetFirstNameSize
@@ -91,9 +91,9 @@ internal class AuthorsControllerTest(
       .response
       .contentAsString
     val after = System.currentTimeMillis()
-    // jackson で List<Author> に parse
+    // jackson で Response に parse
     val authorsResponse = customObjectMapper.readValue(resultStr, AuthorsResponse::class.java)
-    logger.info("TEST-TEST::${test2}: response-time=${after - before} ms, target=山田, response-size=${authorsResponse.authors.size} , db-target-count=$targetFirstNameSize")
+    logger.info("TEST-TEST::${test3}: response-time=${after - before} ms, target=山田, response-size=${authorsResponse.authors.size} , db-target-count=$targetFirstNameSize")
     authorsResponse.authors.size shouldBe targetFirstNameSize
   }
 

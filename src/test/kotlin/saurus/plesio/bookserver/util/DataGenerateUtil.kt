@@ -1,5 +1,9 @@
 package saurus.plesio.bookserver.util
 
+import saurus.plesio.bookserver.db.AuthorRepository
+import saurus.plesio.bookserver.db.BookRepository
+import java.time.LocalDate
+
 fun generateAuthorName(): String {
   return "${lastNames.random()} ${firstNames.random()}"
 }
@@ -89,3 +93,20 @@ val bookTitlesC: Array<String> = arrayOf(
   "すごいやつ",
   "ヤバいやつ"
 )
+
+
+fun randomInsertAuthorBooks(
+  authorSize: Int,
+  bookSize: Int,
+  authorRepository: AuthorRepository,
+  bookRepository: BookRepository
+) {
+  repeat((1..authorSize).count()) {
+    val authorId = authorRepository.insert(generateAuthorName(), (1600..2011).random(), "")
+
+    repeat((1..bookSize).count()) {
+      val localDate = LocalDate.of((1900..2020).random(), (1..12).random(), (1..28).random())
+      bookRepository.insert(authorId, generateBookTitle(), "", localDate, "")
+    }
+  }
+}
