@@ -98,3 +98,12 @@ TBD..(というか本番デプロイの想定はしない.)
     * DB定義上のVARCHARやINTなどの最大値最小値判定、NULL判定
     * PK重複判定
     * etc.. 他に思いつくであろう一般的な単体テスト。
+
+### GitHub Actions on Local on Mac
+
+とりあえず、 Ubuntu 18.04 をターゲットに act を叩くのが良いみたい。  
+少なくとも Ubuntu 22.04 向けで整備すると、ローカルで動作確認するのが大変になるっぽい。
+
+> act -P ubuntu-18.04=nektos/act-environments-ubuntu:18.04
+
+もしなんらかの理由で途中中断した場合、別途 docker-compose down なりを叩かないと maridb が起動しっぱなしになる場合がある。
