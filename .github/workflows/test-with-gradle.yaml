@@ -10,9 +10,27 @@ on:
       - main
 
 jobs:
-  build:
+  test-with-db-container:
     runs-on: ubuntu-latest
     name: Test
+    services:
+      db:
+        image: mariadb:10.11.4-jammy
+        ports:
+          - 3306:3306
+        env:
+          MARIADB_ROOT_HOST: %
+          MARIADB_DATABASE: bookdb
+          MARIADB_USER: maria
+          MARIADB_PASSWORD: mariaMaria
+          MARIADB_MYSQL_LOCALHOST_USER: maria
+          MARIADB_MYSQL_LOCALHOST_PASSWORD: mariaMaria
+          MARIADB_ROOT_PASSWORD: mariaMaria
+        options: >-
+          --health-cmd "mysqladmin ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
@@ -20,8 +38,8 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: MariaDB docker container
-        run: docker-compose -f ./docker-compose.yaml up -d
+      - name: Show Docker containers
+        run: docker ps -a
 
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
