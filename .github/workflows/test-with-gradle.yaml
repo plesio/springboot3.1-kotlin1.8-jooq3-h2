@@ -52,8 +52,5 @@ jobs:
       - name: jooq generate
         run: ./gradlew generateJooq
 
-      - name: MariaDB docker container STOP
-        run: docker-compose -f ./docker-compose.yaml down
-
       - name: Run test
         run: ./gradlew test
