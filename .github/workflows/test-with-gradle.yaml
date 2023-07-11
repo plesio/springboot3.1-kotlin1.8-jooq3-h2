@@ -20,11 +20,6 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Create folder
-        run: |
-          mkdir ./db_data
-          chmod 777 ./db_data
-
       - name: MariaDB docker container
         run: docker-compose -f ./docker-compose.yaml up -d
 
