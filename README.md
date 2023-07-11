@@ -33,7 +33,8 @@ KotlinとSpring Boot、jOOQを使った、書籍管理APIサーバーのサン�
 ### Debug Run
 
 ```shell
-$ mkdir db_data
+# $ mkdir db_data
+# ↑ データ永続化をする場合 docker-compose.yaml 側の volumes 設定を書き換えること 
 $ docker-compose up -d
   >> これで mariadb が立ち上がる.
 $ ./gradlew flywayMigrate
@@ -98,6 +99,13 @@ TBD..(というか本番デプロイの想定はしない.)
     * DB定義上のVARCHARやINTなどの最大値最小値判定、NULL判定
     * PK重複判定
     * etc.. 他に思いつくであろう一般的な単体テスト。
+
+### GitHub Actions
+
+とりあえず、ローカルテスト環境に似た状態を再現するところまでは行った。  
+実際に最後まで走りきってくれるかはちょっとわからないので、そのあたりはWIPにしておく。
+
+トリガーは main にマージしたりしたとき。
 
 ### GitHub Actions on Local on Mac
 

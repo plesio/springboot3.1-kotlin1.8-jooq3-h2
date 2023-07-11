@@ -16,6 +16,7 @@ services:
       - MARIADB_MYSQL_LOCALHOST_USER=maria
       - MARIADB_MYSQL_LOCALHOST_PASSWORD=mariaMaria
       - MARIADB_ROOT_PASSWORD=mariaMaria
-    volumes:
-      - ./db_data:/var/lib/mysql
+#    // MEMO: ローカルで開発するときは、これを有効化するとデータ永続化ができる.
+#    volumes:
+#      - ./db_data:/var/lib/mysql
     user: 1000:1000
