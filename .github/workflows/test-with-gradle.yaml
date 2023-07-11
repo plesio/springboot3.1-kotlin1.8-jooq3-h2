@@ -19,7 +19,7 @@ jobs:
         ports:
           - 3306:3306
         env:
-          MARIADB_ROOT_HOST: %
+          MARIADB_ROOT_HOST: '%'
           MARIADB_DATABASE: bookdb
           MARIADB_USER: maria
           MARIADB_PASSWORD: mariaMaria
