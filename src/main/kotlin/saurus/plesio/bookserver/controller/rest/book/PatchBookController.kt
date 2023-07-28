@@ -6,45 +6,29 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
-import saurus.plesio.bookserver.db.BookRepository
-import saurus.plesio.bookserver.jooq.tables.references.BOOK
 import saurus.plesio.bookserver.openapi.generated.controller.PatchUpdateBookApi
 import saurus.plesio.bookserver.openapi.generated.model.Book
 import saurus.plesio.bookserver.openapi.generated.model.BookIdResponse
+import saurus.plesio.bookserver.service.BookService
 
 @RestController
-class PatchBookController : PatchUpdateBookApi {
-  companion object {
-    val logger = LoggerFactory.getLogger(PatchBookController::class.java)!!
-  }
-
-  @Autowired
-  lateinit var bookRepository: BookRepository
-
+class PatchBookController(
+  @Autowired val bookService: BookService
+) : PatchUpdateBookApi {
+  @Throws(ResponseStatusException::class)
   override fun patchUpdateBook(bookId: String, book: Book): ResponseEntity<BookIdResponse> {
     logger.info("patchUpdateBook: bookId: $bookId, book: $book")
-    if (bookId.isBlank() || bookId != book.bookId) {
-      throw ResponseStatusException(HttpStatus.NOT_FOUND, "bookId is not match.")
-    }
-    // validation - varchar max length
-    val isbnCodeMaxLength = BOOK.field(BOOK.ISBN_CODE)?.dataType?.length() ?: -1
-    if (book.isbnCode != null && isbnCodeMaxLength < book.isbnCode.length) {
-      throw ResponseStatusException(HttpStatus.BAD_REQUEST, "isbnCode is too long. (MAX: ${isbnCodeMaxLength})")
-    }
+    bookService.validatePatchUpdateBook(bookId, book)
+
     return try {
-      book.let {
-        saurus.plesio.bookserver.jooq.tables.pojos.Book(
-          bookId = it.bookId!!,
-          bookTitle = it.bookTitle!!,
-          isbnCode = it.isbnCode ?: "",
-          publishedDate = it.publishedDate!!,
-          remarks = it.remarks ?: ""
-        )
-      }.let(bookRepository::update)
-      ResponseEntity(BookIdResponse(bookId = bookId), HttpStatus.OK)
+      val res = BookIdResponse(bookService.updateBook(book))
+      ResponseEntity(res, HttpStatus.OK)
     } catch (e: Exception) {
       throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
     }
   }
 
+  companion object {
+    val logger = LoggerFactory.getLogger(PatchBookController::class.java)!!
+  }
 }

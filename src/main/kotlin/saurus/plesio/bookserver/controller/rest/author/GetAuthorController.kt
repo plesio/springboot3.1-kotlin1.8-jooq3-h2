@@ -6,37 +6,24 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
-import saurus.plesio.bookserver.db.AuthorRepository
 import saurus.plesio.bookserver.openapi.generated.controller.GetAuthorApi
 import saurus.plesio.bookserver.openapi.generated.model.Author
+import saurus.plesio.bookserver.service.AuthorService
 
 @RestController
-class GetAuthorController : GetAuthorApi {
-  companion object {
-    val logger: Logger = LoggerFactory.getLogger(GetAuthorController::class.java)!!
-  }
+class GetAuthorController(
+  @Autowired val authorService: AuthorService,
+) : GetAuthorApi {
 
-  @Autowired
-  lateinit var authorRepository: AuthorRepository
 
   override fun getAuthor(authorId: String): ResponseEntity<Author> {
     logger.info("getAuthor: authorId: $authorId")
-    val author = authorRepository.findById(authorId)?.let {
-      when {
-        it.authorId.isNullOrBlank() -> null
-        else -> Author(
-          authorId = it.authorId!!,
-          authorName = it.authorName!!,
-          birthYear = it.birthYear,
-          remarks = it.remarks ?: ""
-        )
-      }
-    }
-
-    return author?.let {
-      ResponseEntity(it, HttpStatus.OK)
-    } ?: ResponseEntity(HttpStatus.NOT_FOUND)
+    val author = authorService.getAuthor(authorId)
+    return if (author != null) ResponseEntity(author, HttpStatus.OK) else ResponseEntity(HttpStatus.NOT_FOUND)
   }
 
+  companion object {
+    val logger: Logger = LoggerFactory.getLogger(GetAuthorController::class.java)!!
+  }
 }
 

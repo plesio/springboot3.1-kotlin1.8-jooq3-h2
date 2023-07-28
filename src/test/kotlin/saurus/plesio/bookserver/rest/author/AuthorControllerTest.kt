@@ -18,7 +18,7 @@ import org.springframework.test.web.servlet.post
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import saurus.plesio.bookserver.db.AuthorRepository
-import saurus.plesio.bookserver.jooq.tables.pojos.Author
+import saurus.plesio.bookserver.model.Author
 import saurus.plesio.bookserver.util.customObjectMapper
 import saurus.plesio.bookserver.util.generateAuthorName
 import saurus.plesio.bookserver.util.initTestContainer
@@ -51,6 +51,16 @@ internal class AuthorControllerTest(
     authorRepository.listAll().size shouldBe 1
   }
 
+  test("post author name too long error check") {
+    mockMvc.post("/api/v1/authors") {
+      contentType = MediaType.APPLICATION_JSON
+      content = """{"authorName": "${"a".repeat(101)}","birthYear": "${(1960..2011).random()}","remarks": ""}"""
+    }.andExpect {
+      status { isBadRequest() }
+    }
+    authorRepository.listAll().size shouldBe 0
+  }
+
   val test1 = "simple 1 get and check"
   test(test1) {
     val authorName = generateAuthorName()
@@ -69,8 +79,8 @@ internal class AuthorControllerTest(
     retJsonTxt.isBlank() shouldNotBe true
     retJsonTxt shouldNotBe "{}"
     val retAuthor = customObjectMapper.readValue(retJsonTxt, Author::class.java)
-    logger.info("TEST-TEST:${test1} retAuthor:${retAuthor}")
-    (retAuthor.authorName == authorName) shouldBe true
+    logger.info("TEST-TEST:${test1} retAuthor:${retAuthor}, targetAuthor:${authorName}")
+    (retAuthor.authorName) shouldBe authorName
   }
 
   test("get not exist author.") {

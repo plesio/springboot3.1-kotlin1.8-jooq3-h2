@@ -7,52 +7,25 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
-import saurus.plesio.bookserver.db.AuthorBookRepository
-import saurus.plesio.bookserver.db.BookRepository
+import org.springframework.web.server.ResponseStatusException
 import saurus.plesio.bookserver.openapi.generated.controller.GetAuthorBooksApi
-import saurus.plesio.bookserver.openapi.generated.model.Book
 import saurus.plesio.bookserver.openapi.generated.model.BooksResponse
+import saurus.plesio.bookserver.service.AuthorBookService
 
 @RestController
-class GetAuthorBookController : GetAuthorBooksApi {
+class GetAuthorBookController(
+  @Autowired val authorBookService: AuthorBookService,
+) : GetAuthorBooksApi {
   companion object {
     val logger: Logger = LoggerFactory.getLogger(GetAuthorBookController::class.java)!!
   }
 
-  @Autowired
-  lateinit var authorBookRepository: AuthorBookRepository
-
-  @Autowired
-  lateinit var bookRepository: BookRepository
-
+  @Throws(ResponseStatusException::class)
   override fun getAuthorBooks(authorId: String, bookTitle: String?, isbnCode: String?): ResponseEntity<BooksResponse> {
     logger.info("getAuthorBooks: authorId: $authorId, bookTitle: $bookTitle, isbnCode: $isbnCode")
-    if (authorId.isBlank()) {
-      return ResponseEntity(HttpStatus.NOT_FOUND)
-    }
-    // MEMO: その Author が存在するかの判定はしない.
-    val bookIds = authorBookRepository.listByAuthorId(authorId).mapNotNull { it.bookId }
-    val books = bookRepository.listByBooksIds(bookIds).asSequence() //
-      .filter { book ->
-        when {
-          bookTitle.isNullOrBlank() -> true
-          else -> (book.bookTitle ?: "").contains(bookTitle)
-        }
-      }.filter { book ->
-        when {
-          isbnCode.isNullOrBlank() -> true
-          else -> book.isbnCode == isbnCode
-        }
-      }.map {
-        Book(
-          bookId = it.bookId!!,
-          bookTitle = it.bookTitle!!,
-          isbnCode = it.isbnCode ?: "",
-          publishedDate = it.publishedDate!!,
-          remarks = it.remarks ?: ""
-        )
-      }.toList()
-
+    authorBookService.validateGetAuthorBooks(authorId)
+    //
+    val books = authorBookService.getBooks(authorId, bookTitle, isbnCode)
     return ResponseEntity(BooksResponse(books = books), HttpStatus.OK)
   }
 

@@ -17,7 +17,7 @@ import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import saurus.plesio.bookserver.db.AuthorRepository
 import saurus.plesio.bookserver.db.BookRepository
-import saurus.plesio.bookserver.jooq.tables.pojos.Book
+import saurus.plesio.bookserver.model.Book
 import saurus.plesio.bookserver.openapi.generated.model.BookIdResponse
 import saurus.plesio.bookserver.util.*
 import java.time.LocalDate
@@ -48,7 +48,7 @@ internal class AuthorBookControllerTest(
     val dummyAuthorId = authorRepository.insert("山田 光三郎", 1960, "")
     val publishDate = LocalDate.of((1960..2011).random(), (1..12).random(), (1..28).random())
     val bookTitle = generateBookTitle()
-    val postBook = Book(null, bookTitle, "aaa", publishDate, "")
+    val postBook = Book("", bookTitle, "aaa", publishDate, "")
 
     val resTxt = mockMvc.post("/api/v1/authors/$dummyAuthorId/books") {
       contentType = MediaType.APPLICATION_JSON
