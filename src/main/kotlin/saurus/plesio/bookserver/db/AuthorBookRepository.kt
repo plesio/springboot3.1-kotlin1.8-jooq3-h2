@@ -4,7 +4,7 @@ package saurus.plesio.bookserver.db
 import org.jooq.DSLContext
 import org.jooq.Record
 import org.springframework.stereotype.Repository
-import saurus.plesio.bookserver.jooq.tables.pojos.AuthorBook
+import saurus.plesio.bookserver.model.AuthorBook
 import saurus.plesio.bookserver.jooq.tables.references.AUTHOR_BOOK
 import saurus.plesio.bookserver.jooq.tables.references.BOOK
 

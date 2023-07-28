@@ -18,7 +18,7 @@ import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import saurus.plesio.bookserver.db.AuthorRepository
 import saurus.plesio.bookserver.db.BookRepository
-import saurus.plesio.bookserver.jooq.tables.pojos.Book
+import saurus.plesio.bookserver.model.Book
 import saurus.plesio.bookserver.util.*
 import java.time.LocalDate
 

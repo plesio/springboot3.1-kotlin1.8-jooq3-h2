@@ -7,9 +7,9 @@ import org.jooq.DSLContext
 import org.jooq.Record
 import org.jooq.impl.DSL
 import org.springframework.stereotype.Repository
-import saurus.plesio.bookserver.jooq.tables.pojos.Book
 import saurus.plesio.bookserver.jooq.tables.references.AUTHOR_BOOK
 import saurus.plesio.bookserver.jooq.tables.references.BOOK
+import saurus.plesio.bookserver.model.Book
 import java.time.LocalDate
 
 @Repository
@@ -18,7 +18,7 @@ class BookRepository(
 ) {
 
   fun findById(bookId: String): Book? {
-    return this.dslContext.select().from(BOOK).where(BOOK.BOOK_ID.eq(bookId)).fetchOne()?.let { toModel(it) }
+    return this.dslContext.select().from(BOOK).where(BOOK.BOOK_ID.eq(bookId)).fetchOne()?.let(::toModel)
   }
 
   fun list(bookTitle: String?, isbnCode: String?): List<Book> {
@@ -34,29 +34,28 @@ class BookRepository(
     } else {
       this.dslContext.select().from(BOOK).where(
         BOOK.BOOK_TITLE.like("%$bookTitle%").and(BOOK.ISBN_CODE.eq(isbnCode))
-      ).fetch()
-        .map { toModel(it) }
+      ).fetch().map(::toModel)
     }
   }
 
   fun listByLikeTitle(bookTitle: String? = null): List<Book> {
     return this.dslContext.select().from(BOOK).where(
       (if (bookTitle.isNullOrBlank()) DSL.trueCondition() else BOOK.BOOK_TITLE.like("%$bookTitle%"))
-    ).fetch().map { toModel(it) }
+    ).fetch().map(::toModel)
   }
 
   fun listByIsbnCode(isbnCode: String? = null): List<Book> {
     return this.dslContext.select().from(BOOK).where(
       (if (isbnCode.isNullOrBlank()) DSL.trueCondition() else BOOK.ISBN_CODE.eq(isbnCode))
-    ).fetch().map { toModel(it) }
+    ).fetch().map(::toModel)
   }
 
   fun listByBooksIds(bookIds: List<String>): List<Book> {
-    return this.dslContext.select().from(BOOK).where(BOOK.BOOK_ID.`in`(bookIds)).fetch().map { toModel(it) }
+    return this.dslContext.select().from(BOOK).where(BOOK.BOOK_ID.`in`(bookIds)).fetch().map(::toModel)
   }
 
   fun listAll(): List<Book> {
-    return this.dslContext.select().from(BOOK).fetch().map { toModel(it) }
+    return this.dslContext.select().from(BOOK).fetch().map(::toModel)
   }
 
   /**

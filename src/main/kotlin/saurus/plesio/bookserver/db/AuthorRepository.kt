@@ -1,17 +1,19 @@
 @file:Suppress("unused")
+
 package saurus.plesio.bookserver.db
 
 import com.github.guepardoapps.kulid.ULID
 import org.jooq.DSLContext
 import org.jooq.Record
 import org.jooq.impl.DSL
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
 import saurus.plesio.bookserver.jooq.tables.Author.Companion.AUTHOR
-import saurus.plesio.bookserver.jooq.tables.pojos.Author
+import saurus.plesio.bookserver.model.Author
 
 @Repository
 class AuthorRepository(
-  private val dslContext: DSLContext
+  @Autowired val dslContext: DSLContext
 ) {
 
   fun findById(authorId: String): Author? {
@@ -67,8 +69,8 @@ class AuthorRepository(
 
 
   private fun toModel(record: Record) = Author(
-    record.getValue(AUTHOR.AUTHOR_ID),
-    record.getValue(AUTHOR.AUTHOR_NAME),
+    record.getValue(AUTHOR.AUTHOR_ID) ?: "",
+    record.getValue(AUTHOR.AUTHOR_NAME) ?: "",
     record.getValue(AUTHOR.BIRTH_YEAR),
     record.getValue(AUTHOR.REMARKS),
   )

@@ -18,7 +18,7 @@ import org.springframework.test.web.servlet.post
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import saurus.plesio.bookserver.db.AuthorRepository
-import saurus.plesio.bookserver.jooq.tables.pojos.Author
+import saurus.plesio.bookserver.model.Author
 import saurus.plesio.bookserver.util.customObjectMapper
 import saurus.plesio.bookserver.util.generateAuthorName
 import saurus.plesio.bookserver.util.initTestContainer
@@ -69,8 +69,8 @@ internal class AuthorControllerTest(
     retJsonTxt.isBlank() shouldNotBe true
     retJsonTxt shouldNotBe "{}"
     val retAuthor = customObjectMapper.readValue(retJsonTxt, Author::class.java)
-    logger.info("TEST-TEST:${test1} retAuthor:${retAuthor}")
-    (retAuthor.authorName == authorName) shouldBe true
+    logger.info("TEST-TEST:${test1} retAuthor:${retAuthor}, targetAuthor:${authorName}")
+    (retAuthor.authorName) shouldBe authorName
   }
 
   test("get not exist author.") {

@@ -6,38 +6,31 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
-import saurus.plesio.bookserver.db.AuthorRepository
-import saurus.plesio.bookserver.jooq.tables.references.AUTHOR
 import saurus.plesio.bookserver.openapi.generated.controller.PostInsertAuthorApi
 import saurus.plesio.bookserver.openapi.generated.model.Author
 import saurus.plesio.bookserver.openapi.generated.model.AuthorIdResponse
+import saurus.plesio.bookserver.service.AuthorService
 
 @RestController
-class PostAuthorController : PostInsertAuthorApi {
-  companion object {
-    val logger = LoggerFactory.getLogger(PostAuthorController::class.java)!!
-  }
-
-  @Autowired
-  lateinit var authorRepository: AuthorRepository
+class PostAuthorController(
+  @Autowired val authorService: AuthorService
+) : PostInsertAuthorApi {
 
   override fun postInsertAuthor(author: Author): ResponseEntity<AuthorIdResponse> {
     logger.info("postInsertAuthor: author: $author")
-    if (author.authorName.isBlank()) {
-      throw ResponseStatusException(HttpStatus.BAD_REQUEST, "authorName is blank")
-    }
-    // validation - varchar max length
-    val authorNameMaxLength = AUTHOR.field(AUTHOR.AUTHOR_NAME)?.dataType?.length() ?: -1
-    if (authorNameMaxLength < author.authorName.length) {
-      throw ResponseStatusException(HttpStatus.BAD_REQUEST, "authorName is too long. (MAX: ${authorNameMaxLength})")
-    }
-
+    authorService.validatePostInsertAuthor(author)
+    //
     return try {
-      val newAuthorId = authorRepository.insert(author.authorName, author.birthYear, author.remarks ?: "")
-      ResponseEntity(AuthorIdResponse(authorId = newAuthorId), HttpStatus.OK)
+      val newAuthorId = authorService.insertAuthor(author)
+      ResponseEntity(AuthorIdResponse(newAuthorId), HttpStatus.OK)
     } catch (e: Exception) {
+      logger.error("postInsertAuthor: author: $author", e)
       throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
     }
+  }
+
+  companion object {
+    val logger = LoggerFactory.getLogger(PostAuthorController::class.java)!!
   }
 
 }

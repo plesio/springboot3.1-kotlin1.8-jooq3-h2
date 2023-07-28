@@ -6,47 +6,31 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
-import saurus.plesio.bookserver.db.AuthorRepository
-import saurus.plesio.bookserver.jooq.tables.references.AUTHOR
 import saurus.plesio.bookserver.openapi.generated.controller.PatchUpdateAuthorApi
 import saurus.plesio.bookserver.openapi.generated.model.Author
 import saurus.plesio.bookserver.openapi.generated.model.AuthorIdResponse
+import saurus.plesio.bookserver.service.AuthorService
 
 @RestController
-class PatchAuthorController : PatchUpdateAuthorApi {
-  companion object {
-    val logger = LoggerFactory.getLogger(PatchAuthorController::class.java)!!
-  }
-
-  @Autowired
-  lateinit var authorRepository: AuthorRepository
+class PatchAuthorController(
+  @Autowired val authorService: AuthorService
+) : PatchUpdateAuthorApi {
 
   override fun patchUpdateAuthor(authorId: String, author: Author): ResponseEntity<AuthorIdResponse> {
     logger.info("patchUpdateAuthor: authorId: $authorId, author: $author")
-    if (authorId.isBlank() || authorId != author.authorId) {
-      throw ResponseStatusException(HttpStatus.NOT_FOUND, "authorId is not match.")
-    }
-    // validation - varchar max length
-    val authorNameMaxLength = AUTHOR.field(AUTHOR.AUTHOR_NAME)?.dataType?.length() ?: -1
-    if (authorNameMaxLength < author.authorName.length) {
-      throw ResponseStatusException(HttpStatus.BAD_REQUEST, "authorName is too long. (MAX: ${authorNameMaxLength})")
-    }
-
+    authorService.validatePatchUpdateAuthor(authorId, author)
+    //
     return try {
-      author.let {
-        saurus.plesio.bookserver.jooq.tables.pojos.Author(
-          authorId = it.authorId!!,
-          authorName = it.authorName,
-          birthYear = it.birthYear,
-          remarks = it.remarks ?: ""
-        )
-      }.let(authorRepository::update)
-      ResponseEntity(AuthorIdResponse(authorId = authorId), HttpStatus.OK)
+      val res = AuthorIdResponse(authorService.updateAuthor(author))
+      ResponseEntity(res, HttpStatus.OK)
     } catch (e: Exception) {
+      logger.error("patchUpdateAuthor: authorId: $authorId, author: $author", e)
       throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
     }
   }
 
-
+  companion object {
+    val logger = LoggerFactory.getLogger(PatchAuthorController::class.java)!!
+  }
 }
 
