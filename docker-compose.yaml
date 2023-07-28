@@ -7,7 +7,7 @@ services:
     hostname: h_maria_db
     restart: always
     ports:
-      - "3306:3306"
+      - "127.0.0.1:3306:3306"
     environment:
       - MARIADB_ROOT_HOST=%
       - MARIADB_DATABASE=bookdb
@@ -16,7 +16,8 @@ services:
       - MARIADB_MYSQL_LOCALHOST_USER=maria
       - MARIADB_MYSQL_LOCALHOST_PASSWORD=mariaMaria
       - MARIADB_ROOT_PASSWORD=mariaMaria
-#    // MEMO: ローカルで開発するときは、これを有効化するとデータ永続化ができる.
-#    volumes:
-#      - ./db_data:/var/lib/mysql
-    user: 1000:1000
+    # MEMO: ローカルで開発するときは、これを有効化するとデータ永続化ができる.
+    #volumes:
+    #  - ./db_data:/var/lib/mysql
+    # MEMO: Rancher Desktop とか王道じゃない環境で動かすとき、以下の設定が必要になる場合がある。
+    # user: 1000:1000
