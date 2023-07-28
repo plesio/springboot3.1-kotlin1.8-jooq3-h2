@@ -15,6 +15,7 @@ import saurus.plesio.bookserver.service.BookService
 class PatchBookController(
   @Autowired val bookService: BookService
 ) : PatchUpdateBookApi {
+  @Throws(ResponseStatusException::class)
   override fun patchUpdateBook(bookId: String, book: Book): ResponseEntity<BookIdResponse> {
     logger.info("patchUpdateBook: bookId: $bookId, book: $book")
     bookService.validatePatchUpdateBook(bookId, book)

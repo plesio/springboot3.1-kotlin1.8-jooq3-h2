@@ -27,8 +27,7 @@ class BookService(
   @Transactional
   fun updateBook(openapiBook: Book): String {
     val o = openapiBook
-    val book =
-      saurus.plesio.bookserver.model.Book(o.bookId ?: "", o.bookTitle ?: "", o.isbnCode, o.publishedDate, o.remarks)
+    val book = saurus.plesio.bookserver.model.Book(o.bookId ?: "", o.bookTitle ?: "", o.isbnCode, o.publishedDate, o.remarks)
     bookRepository.update(book)
     return book.bookId
   }

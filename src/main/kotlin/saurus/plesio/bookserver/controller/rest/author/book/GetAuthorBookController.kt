@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.server.ResponseStatusException
 import saurus.plesio.bookserver.openapi.generated.controller.GetAuthorBooksApi
 import saurus.plesio.bookserver.openapi.generated.model.BooksResponse
 import saurus.plesio.bookserver.service.AuthorBookService
@@ -19,6 +20,7 @@ class GetAuthorBookController(
     val logger: Logger = LoggerFactory.getLogger(GetAuthorBookController::class.java)!!
   }
 
+  @Throws(ResponseStatusException::class)
   override fun getAuthorBooks(authorId: String, bookTitle: String?, isbnCode: String?): ResponseEntity<BooksResponse> {
     logger.info("getAuthorBooks: authorId: $authorId, bookTitle: $bookTitle, isbnCode: $isbnCode")
     authorBookService.validateGetAuthorBooks(authorId)

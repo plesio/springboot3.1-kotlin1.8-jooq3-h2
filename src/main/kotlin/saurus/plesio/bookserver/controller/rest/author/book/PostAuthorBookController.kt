@@ -17,6 +17,7 @@ class PostAuthorBookController(
   @Autowired val authorBookService: AuthorBookService,
 ) : PostInsertAuthorBookApi {
 
+  @Throws(ResponseStatusException::class)
   override fun postInsertAuthorBook(authorId: String, book: Book): ResponseEntity<BookIdResponse> {
     logger.info("postInsertAuthorBook: authorId: $authorId, book: $book")
     authorBookService.validatePostInsertAuthorBook(authorId, book)

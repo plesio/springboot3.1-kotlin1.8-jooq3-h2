@@ -12,9 +12,11 @@ import saurus.plesio.bookserver.service.AuthorService
 
 @RestController
 class GetAuthorController(
-  @Autowired val authorService: AuthorService
+  @Autowired val authorService: AuthorService,
 ) : GetAuthorApi {
-    override fun getAuthor(authorId: String): ResponseEntity<Author> {
+
+
+  override fun getAuthor(authorId: String): ResponseEntity<Author> {
     logger.info("getAuthor: authorId: $authorId")
     val author = authorService.getAuthor(authorId)
     return if (author != null) ResponseEntity(author, HttpStatus.OK) else ResponseEntity(HttpStatus.NOT_FOUND)

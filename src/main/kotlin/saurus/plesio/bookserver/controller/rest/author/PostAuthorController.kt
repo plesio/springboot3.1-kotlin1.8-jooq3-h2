@@ -15,6 +15,7 @@ import saurus.plesio.bookserver.service.AuthorService
 class PostAuthorController(
   @Autowired val authorService: AuthorService
 ) : PostInsertAuthorApi {
+  @Throws(ResponseStatusException::class)
 
   override fun postInsertAuthor(author: Author): ResponseEntity<AuthorIdResponse> {
     logger.info("postInsertAuthor: author: $author")
