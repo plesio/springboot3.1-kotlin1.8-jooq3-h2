@@ -31,9 +31,9 @@ class AuthorBookService(
   }
 
   @Transactional
-  fun insertAuthorBook(authorId: String, book: Book): String {
-    val (_, title, isbn, date, remarks) = book
-    val bookId = bookRepository.insert(authorId, title ?: "", isbn, date, remarks)
+  fun insertAuthorBook(authorId: String, openapiBook: Book): String {
+    val o = openapiBook
+    val bookId = bookRepository.insert(authorId, o.bookTitle ?: "", o.isbnCode, o.publishedDate, o.remarks)
     return bookId
   }
 

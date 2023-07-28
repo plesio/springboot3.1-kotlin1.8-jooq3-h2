@@ -26,10 +26,10 @@ class AuthorService(
 
   @Transactional
   fun updateAuthor(openapiAuthor: Author): String {
-    val (id, name, birthYear, remarks) = openapiAuthor
-    val author = saurus.plesio.bookserver.model.Author(id, name ?: "", birthYear, remarks ?: "")
+    val o = openapiAuthor
+    val author = saurus.plesio.bookserver.model.Author(o.authorId ?: "", o.authorName, o.birthYear, o.remarks ?: "")
     authorRepository.update(author)
-    return id
+    return author.authorId
   }
 
   @Transactional

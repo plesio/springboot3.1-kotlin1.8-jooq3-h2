@@ -51,6 +51,16 @@ internal class AuthorControllerTest(
     authorRepository.listAll().size shouldBe 1
   }
 
+  test("post author name too long error check") {
+    mockMvc.post("/api/v1/authors") {
+      contentType = MediaType.APPLICATION_JSON
+      content = """{"authorName": "${"a".repeat(101)}","birthYear": "${(1960..2011).random()}","remarks": ""}"""
+    }.andExpect {
+      status { isBadRequest() }
+    }
+    authorRepository.listAll().size shouldBe 0
+  }
+
   val test1 = "simple 1 get and check"
   test(test1) {
     val authorName = generateAuthorName()
